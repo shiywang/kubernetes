@@ -1,5 +1,5 @@
 <!-- BEGIN MUNGE: GENERATED_TOC -->
-- [v1.6.0-alpha.3](#v160-alpha3)
+- [v1.6.0-alpha.3 (2017-09-26)](#v160-alpha3 (2017-09-26)) 
   - [Downloads for v1.6.0-alpha.3](#downloads-for-v160-alpha3)
     - [Client Binaries](#client-binaries)
     - [Server Binaries](#server-binaries)
@@ -349,7 +349,7 @@
 <!-- NEW RELEASE NOTES ENTRY -->
 
 
-# v1.6.0-alpha.3
+# v1.6.0-alpha.3 (2017-09-26)
 
 [Documentation](https://docs.k8s.io) & [Examples](https://releases.k8s.io/master/examples)
 
