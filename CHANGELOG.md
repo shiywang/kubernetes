@@ -349,7 +349,7 @@
 <!-- NEW RELEASE NOTES ENTRY -->
 
 
-# v1.6.0-alpha.3 (2017-09-26)
+# v1.6.0-alpha.3
 
 [Documentation](https://docs.k8s.io) & [Examples](https://releases.k8s.io/master/examples)
 
