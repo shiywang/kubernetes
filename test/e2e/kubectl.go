@@ -41,6 +41,7 @@ import (
 
 	"github.com/elazarl/goproxy"
 	"github.com/ghodss/yaml"
+	"github.com/davecgh/go-spew/spew"
 
 	apierrs "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -96,6 +97,9 @@ const (
 	kubeCtlManifestPath      = "test/e2e/testing-manifests/kubectl"
 	redisControllerFilename  = "redis-master-controller.json"
 	redisServiceFilename     = "redis-master-service.json"
+	nginxDeployment1Filename     = "nginx-deployment1.yaml"
+	nginxDeployment2Filename     = "nginx-deployment2.yaml"
+	nginxDeployment3Filename     = "nginx-deployment3.yaml"
 )
 
 var (
@@ -673,6 +677,61 @@ var _ = framework.KubeDescribe("Kubectl client", func() {
 			if originalNodePort != currentNodePort {
 				framework.Failf("port should keep the same")
 			}
+		})
+		It("apply doesn't affect scale command", func() {
+			deployment1Yaml := readTestFileOrDie(nginxDeployment1Filename)
+			//deployment2Yaml := readTestFileOrDie(nginxDeployment2Filename)
+			//deployment3Yaml := readTestFileOrDie(nginxDeployment3Filename)
+
+			nsFlag := fmt.Sprintf("--namespace=%v", ns)
+
+			By("deployment replicas number is 2")
+			framework.RunKubectlOrDieInput(string(deployment1Yaml[:]), "apply", "-f", "-", nsFlag)
+
+			By("check the last-applied matches expectations annotations")
+			output := framework.RunKubectlOrDieInput(string(deployment1Yaml[:]), "apply", "view-last-applied", "redis-master", nsFlag, "-o", "jsonpath={.spec.ports[0].port}")
+			/*
+			requiredStrings := [][]string{
+				{"Name:", "redis-master"},
+				{"Namespace:", ns},
+				{"Image(s):", redisImage},
+				{"Selector:", "app=redis,role=master"},
+				{"Labels:", "app=redis"},
+				{"role=master"},
+				{"Annotations:"},
+				{"Replicas:", "1 current", "1 desired"},
+				{"Pods Status:", "1 Running", "0 Waiting", "0 Succeeded", "0 Failed"},
+				// {"Events:"} would ordinarily go in the list
+				// here, but in some rare circumstances the
+				// events are delayed, and instead kubectl
+				// prints "No events." This string will match
+				// either way.
+				{"vents"}}
+			checkOutput(output, requiredStrings)
+
+			spew.Dump(output)
+			By("check doesn't have replicas")
+			_ = framework.RunKubectlOrDieInput(string(deployment2Yaml[:]), "apply", "set-last-applied", "redis-master", nsFlag, "-o", "jsonpath={.spec.ports[0].port}")
+
+			By("check last-applied has been updated")
+			_ = framework.RunKubectlOrDieInput(string(deployment1Yaml[:]), "apply", "view-last-applied", "redis-master", nsFlag, "-o", "jsonpath={.spec.ports[0].port}")
+
+			By("scale set replicas to 3")
+			framework.RunKubectlOrDie("scale", "deployment", "nginx-deployment", nsFlag)
+
+			By("doesn't have replicas and change the image")
+			framework.RunKubectlOrDieInput(string(deployment3Yaml[:]), "apply", "-f", "-", nsFlag)
+
+			By("verify replicas still is 3 and image has been updated")
+			framework.RunKubectlOrDieInput(string(deployment3Yaml[:]), "apply", "-f", "-", nsFlag)
+			//checkOutput(output, requiredStrings)
+
+
+			By("checking the result")
+			if originalNodePort != currentNodePort {
+				framework.Failf("port should keep the same")
+			}
+			*/
 		})
 	})
 
