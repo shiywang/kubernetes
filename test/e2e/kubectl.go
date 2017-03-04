@@ -642,46 +642,9 @@ var _ = framework.KubeDescribe("Kubectl client", func() {
 		})
 	})
 
-	framework.KubeDescribe("hahahahhaha", func() {
+	framework.KubeDescribe("Kubectl apply", func() {
 
-		/*
-		It("should apply a new configuration to an existing RC", func() {
-			controllerJson := readTestFileOrDie(redisControllerFilename)
-
-			nsFlag := fmt.Sprintf("--namespace=%v", ns)
-			By("creating Redis RC")
-			framework.RunKubectlOrDieInput(string(controllerJson), "create", "-f", "-", nsFlag)
-			By("applying a modified configuration")
-			stdin := modifyReplicationControllerConfiguration(string(controllerJson))
-			framework.NewKubectlCommand("apply", "-f", "-", nsFlag).
-				WithStdinReader(stdin).
-				ExecOrDie()
-			By("checking the result")
-			forEachReplicationController(c, ns, "app", "redis", validateReplicationControllerConfiguration)
-		})
-		It("should reuse port when apply to an existing SVC", func() {
-			serviceJson := readTestFileOrDie(redisServiceFilename)
-			nsFlag := fmt.Sprintf("--namespace=%v", ns)
-
-			By("creating Redis SVC")
-			framework.RunKubectlOrDieInput(string(serviceJson[:]), "create", "-f", "-", nsFlag)
-
-			By("getting the original port")
-			originalNodePort := framework.RunKubectlOrDie("get", "service", "redis-master", nsFlag, "-o", "jsonpath={.spec.ports[0].port}")
-
-			By("applying the same configuration")
-			framework.RunKubectlOrDieInput(string(serviceJson[:]), "apply", "-f", "-", nsFlag)
-
-			By("getting the port after applying configuration")
-			currentNodePort := framework.RunKubectlOrDie("get", "service", "redis-master", nsFlag, "-o", "jsonpath={.spec.ports[0].port}")
-
-			By("checking the result")
-			if originalNodePort != currentNodePort {
-				framework.Failf("port should keep the same")
-			}
-		})
-		*/
-		It("hahahahhaha", func() {
+		It("apply set/view last-applied", func() {
 			deployment1Yaml := readTestFileOrDie(nginxDeployment1Filename)
 			deployment2Yaml := readTestFileOrDie(nginxDeployment2Filename)
 			deployment3Yaml := readTestFileOrDie(nginxDeployment3Filename)
@@ -692,49 +655,41 @@ var _ = framework.KubeDescribe("Kubectl client", func() {
 			framework.RunKubectlOrDieInput(string(deployment1Yaml[:]), "apply", "-f", "-", nsFlag)
 
 			By("check the last-applied matches expectations annotations")
-			output := framework.RunKubectlOrDieInput(string(deployment1Yaml[:]), "apply", "view-last-applied", "redis-master", nsFlag, "-o", "jsonpath={.spec.replicas")
+			output := framework.RunKubectlOrDieInput(string(deployment1Yaml[:]), "apply", "view-last-applied", "redis-master", nsFlag, "-o", "json")
 			spew.Dump(output)
+			fmt.Println(output)
 
-			requiredStrings := [][]string{
-				{"Name:", "redis-master"},
-				{"Namespace:", ns},
-				{"Image(s):", redisImage},
-				{"Selector:", "app=redis,role=master"},
-				{"Labels:", "app=redis"},
-				{"role=master"},
-				{"Annotations:"},
-				{"Replicas:", "1 current", "1 desired"},
-				{"Pods Status:", "1 Running", "0 Waiting", "0 Succeeded", "0 Failed"},
-				// {"Events:"} would ordinarily go in the list
-				// here, but in some rare circumstances the
-				// events are delayed, and instead kubectl
-				// prints "No events." This string will match
-				// either way.
-				{"vents"}}
-			checkOutput(output, requiredStrings)
-
-			spew.Dump(output)
 			By("check doesn't have replicas")
-			_ = framework.RunKubectlOrDieInput(string(deployment2Yaml[:]), "apply", "set-last-applied", "redis-master", nsFlag, "-o", "jsonpath={.spec.ports[0].port}")
+			output = framework.RunKubectlOrDieInput(string(deployment2Yaml[:]), "apply", "set-last-applied", "redis-master", nsFlag, "-o", "json")
+
+			spew.Dump(output)
+			fmt.Println(output)
+
 
 			By("check last-applied has been updated")
-			_ = framework.RunKubectlOrDieInput(string(deployment1Yaml[:]), "apply", "view-last-applied", "redis-master", nsFlag, "-o", "jsonpath={.spec.ports[0].port}")
+			output = framework.RunKubectlOrDieInput(string(deployment1Yaml[:]), "apply", "view-last-applied", "redis-master", nsFlag, "-o", "json")
+
+			spew.Dump(output)
+			fmt.Println(output)
+
 
 			By("scale set replicas to 3")
-			framework.RunKubectlOrDie("scale", "deployment", "nginx-deployment", nsFlag)
+			output = framework.RunKubectlOrDie("scale", "deployment", "nginx-deployment", nsFlag)
+
+			spew.Dump(output)
+			fmt.Println(output)
+
 
 			By("doesn't have replicas and change the image")
-			framework.RunKubectlOrDieInput(string(deployment3Yaml[:]), "apply", "-f", "-", nsFlag)
+			output = framework.RunKubectlOrDieInput(string(deployment3Yaml[:]), "apply", "-f", "-", nsFlag)
+
+			spew.Dump(output)
+			fmt.Println(output)
 
 			By("verify replicas still is 3 and image has been updated")
-			framework.RunKubectlOrDieInput(string(deployment3Yaml[:]), "apply", "-f", "-", nsFlag)
-			//checkOutput(output, requiredStrings)
-
-
-			By("checking the result")
-			//if originalNodePort != currentNodePort {
-			//	framework.Failf("port should keep the same")
-			//}
+			output = framework.RunKubectlOrDieInput(string(deployment3Yaml[:]), "apply", "-f", "-", nsFlag)
+			spew.Dump(output)
+			fmt.Println(output)
 		})
 	})
 
