@@ -678,10 +678,10 @@ var _ = framework.KubeDescribe("Kubectl client", func() {
 				framework.Failf("port should keep the same")
 			}
 		})
-		It("apply doesn't affect scale command", func() {
+		It("hahahahhaha", func() {
 			deployment1Yaml := readTestFileOrDie(nginxDeployment1Filename)
-			//deployment2Yaml := readTestFileOrDie(nginxDeployment2Filename)
-			//deployment3Yaml := readTestFileOrDie(nginxDeployment3Filename)
+			deployment2Yaml := readTestFileOrDie(nginxDeployment2Filename)
+			deployment3Yaml := readTestFileOrDie(nginxDeployment3Filename)
 
 			nsFlag := fmt.Sprintf("--namespace=%v", ns)
 
@@ -691,7 +691,7 @@ var _ = framework.KubeDescribe("Kubectl client", func() {
 			By("check the last-applied matches expectations annotations")
 			output := framework.RunKubectlOrDieInput(string(deployment1Yaml[:]), "apply", "view-last-applied", "redis-master", nsFlag, "-o", "jsonpath={.spec.ports[0].port}")
 			spew.Dump(output)
-			/*
+
 			requiredStrings := [][]string{
 				{"Name:", "redis-master"},
 				{"Namespace:", ns},
@@ -729,10 +729,9 @@ var _ = framework.KubeDescribe("Kubectl client", func() {
 
 
 			By("checking the result")
-			if originalNodePort != currentNodePort {
-				framework.Failf("port should keep the same")
-			}
-			*/
+			//if originalNodePort != currentNodePort {
+			//	framework.Failf("port should keep the same")
+			//}
 		})
 	})
 
