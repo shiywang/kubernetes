@@ -642,7 +642,9 @@ var _ = framework.KubeDescribe("Kubectl client", func() {
 		})
 	})
 
-	framework.KubeDescribe("Kubectl apply", func() {
+	framework.KubeDescribe("hahahahhaha", func() {
+
+		/*
 		It("should apply a new configuration to an existing RC", func() {
 			controllerJson := readTestFileOrDie(redisControllerFilename)
 
@@ -678,6 +680,7 @@ var _ = framework.KubeDescribe("Kubectl client", func() {
 				framework.Failf("port should keep the same")
 			}
 		})
+		*/
 		It("hahahahhaha", func() {
 			deployment1Yaml := readTestFileOrDie(nginxDeployment1Filename)
 			deployment2Yaml := readTestFileOrDie(nginxDeployment2Filename)
@@ -689,7 +692,7 @@ var _ = framework.KubeDescribe("Kubectl client", func() {
 			framework.RunKubectlOrDieInput(string(deployment1Yaml[:]), "apply", "-f", "-", nsFlag)
 
 			By("check the last-applied matches expectations annotations")
-			output := framework.RunKubectlOrDieInput(string(deployment1Yaml[:]), "apply", "view-last-applied", "redis-master", nsFlag, "-o", "jsonpath={.spec.ports[0].port}")
+			output := framework.RunKubectlOrDieInput(string(deployment1Yaml[:]), "apply", "view-last-applied", "redis-master", nsFlag, "-o", "jsonpath={.spec.replicas")
 			spew.Dump(output)
 
 			requiredStrings := [][]string{
