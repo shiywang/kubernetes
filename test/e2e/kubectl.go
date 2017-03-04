@@ -655,30 +655,32 @@ var _ = framework.KubeDescribe("Kubectl client", func() {
 			framework.RunKubectlOrDieInput(string(deployment1Yaml[:]), "apply", "-f", "-", nsFlag)
 
 			By("check the last-applied matches expectations annotations")
-			output := framework.RunKubectlOrDieInput(string(deployment1Yaml[:]), "apply", "view-last-applied", "redis-master", nsFlag, "-o", "json")
-			spew.Dump(output)
-			fmt.Println(output)
+			output := framework.RunKubectlOrDieInput(string(deployment1Yaml[:]), "apply", "view-last-applied", "-f", "-", nsFlag, "-o", "json")
 
 			By("check doesn't have replicas")
-			output = framework.RunKubectlOrDieInput(string(deployment2Yaml[:]), "apply", "set-last-applied", "redis-master", nsFlag, "-o", "json")
+			output = framework.RunKubectlOrDieInput(string(deployment2Yaml[:]), "apply", "set-last-applied", "-f", "-", nsFlag, "-o", "json")
 
 			spew.Dump(output)
 			fmt.Println(output)
 
 
 			By("check last-applied has been updated")
-			output = framework.RunKubectlOrDieInput(string(deployment1Yaml[:]), "apply", "view-last-applied", "redis-master", nsFlag, "-o", "json")
+			output = framework.RunKubectlOrDieInput(string(deployment1Yaml[:]), "apply", "view-last-applied", "-f", "-", nsFlag, "-o", "json")
 
 			spew.Dump(output)
 			fmt.Println(output)
 
 
 			By("scale set replicas to 3")
-			output = framework.RunKubectlOrDie("scale", "deployment", "nginx-deployment", nsFlag)
+			nginxDeploy := "nginx"
+			label := labels.SelectorFromSet(labels.Set(map[string]string{"app": nginxDeploy}))
+			err := testutils.WaitForPodsWithLabelRunning(c, ns, label)
+			Expect(err).NotTo(HaveOccurred())
+			output = framework.RunKubectlOrDie("scale", "deployment", nginxDeploy, "--replicas=3", nsFlag)
 
 			spew.Dump(output)
 			fmt.Println(output)
-
+			//output = framework.RunKubectlOrDie("scale", "deployment", "nginx-deployment", nsFlag)
 
 			By("doesn't have replicas and change the image")
 			output = framework.RunKubectlOrDieInput(string(deployment3Yaml[:]), "apply", "-f", "-", nsFlag)
