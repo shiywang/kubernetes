@@ -690,6 +690,7 @@ var _ = framework.KubeDescribe("Kubectl client", func() {
 
 			By("check the last-applied matches expectations annotations")
 			output := framework.RunKubectlOrDieInput(string(deployment1Yaml[:]), "apply", "view-last-applied", "redis-master", nsFlag, "-o", "jsonpath={.spec.ports[0].port}")
+			spew.Dump(output)
 			/*
 			requiredStrings := [][]string{
 				{"Name:", "redis-master"},
