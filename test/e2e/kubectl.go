@@ -677,7 +677,7 @@ var _ = framework.KubeDescribe("Kubectl client", func() {
 			framework.RunKubectlOrDieInput(string(deployment3Yaml[:]), "apply", "-f", "-", nsFlag)
 
 			By("verify replicas still is 3 and image has been updated")
-			output = framework.RunKubectlOrDieInput(string(deployment3Yaml[:]), "get", "-f", "-", nsFlag)
+			output = framework.RunKubectlOrDieInput(string(deployment3Yaml[:]), "get", "-f", "-", nsFlag, "-o", "json")
 			requiredItems := []string{"\"replicas\": 3", "nginx-slim:0.7"}
 			for _, item := range requiredItems {
 				if !strings.Contains(output, item) {
