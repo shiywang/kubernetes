@@ -18,6 +18,7 @@ package e2e
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
