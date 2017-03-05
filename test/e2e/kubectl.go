@@ -18,7 +18,6 @@ package e2e
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -41,7 +40,6 @@ import (
 
 	"github.com/elazarl/goproxy"
 	"github.com/ghodss/yaml"
-	"github.com/davecgh/go-spew/spew"
 
 	apierrs "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
