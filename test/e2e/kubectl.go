@@ -672,26 +672,16 @@ var _ = framework.KubeDescribe("Kubectl client", func() {
 			By("scale set replicas to 3")
 			nginxDeploy := "nginx-deployment"
 			framework.RunKubectlOrDie("scale", "deployment", nginxDeploy, "--replicas=3", nsFlag)
-			//label := labels.SelectorFromSet(labels.Set(map[string]string{"app": nginxDeploy}))
-			//err := testutils.WaitForPodsWithLabelRunning(c, ns, label)
-			//Expect(err).NotTo(HaveOccurred())
-
-			//spew.Dump(output)
-			//fmt.Println(output)
-			//output = framework.RunKubectlOrDie("scale", "deployment", "nginx-deployment", nsFlag)
 
 			By("apply file doesn't have replicas but image changed")
 			framework.RunKubectlOrDieInput(string(deployment3Yaml[:]), "apply", "-f", "-", nsFlag)
 
-			//spew.Dump(output)
-			//fmt.Println(output)
-
 			By("verify replicas still is 3 and image has been updated")
-			output = framework.RunKubectlOrDieInput(string(deployment3Yaml[:]), "apply", "-f", "-", nsFlag)
+			output = framework.RunKubectlOrDieInput(string(deployment3Yaml[:]), "get", "-f", "-", nsFlag)
 			requiredItems := []string{"\"replicas\": 3", "nginx-slim:0.7"}
 			for _, item := range requiredItems {
 				if !strings.Contains(output, item) {
-					framework.Failf("Missing %s in kubectl cluster-info", item)
+					framework.Failf("Missing %s in kubectl apply", item)
 				}
 			}
 		})
