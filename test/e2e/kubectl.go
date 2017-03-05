@@ -648,7 +648,6 @@ var _ = framework.KubeDescribe("Kubectl client", func() {
 			deployment1Yaml := readTestFileOrDie(nginxDeployment1Filename)
 			deployment2Yaml := readTestFileOrDie(nginxDeployment2Filename)
 			deployment3Yaml := readTestFileOrDie(nginxDeployment3Filename)
-
 			nsFlag := fmt.Sprintf("--namespace=%v", ns)
 
 			By("deployment replicas number is 2")
@@ -656,42 +655,46 @@ var _ = framework.KubeDescribe("Kubectl client", func() {
 
 			By("check the last-applied matches expectations annotations")
 			output := framework.RunKubectlOrDieInput(string(deployment1Yaml[:]), "apply", "view-last-applied", "-f", "-", nsFlag, "-o", "json")
+			requiredString := "\"replicas\": 2"
+			if !strings.Contains(output, requiredString) {
+				framework.Failf("Missing %s in kubectl view-last-applied", requiredString)
+			}
 
-			By("check doesn't have replicas")
-			output = framework.RunKubectlOrDieInput(string(deployment2Yaml[:]), "apply", "set-last-applied", "-f", "-", nsFlag, "-o", "json")
+			By("apply file doesn't have replicas")
+			framework.RunKubectlOrDieInput(string(deployment2Yaml[:]), "apply", "set-last-applied", "-f", "-", nsFlag)
 
-			spew.Dump(output)
-			fmt.Println(output)
-
-
-			By("check last-applied has been updated")
+			By("check last-applied has been updated, annotations doesn't replicas")
 			output = framework.RunKubectlOrDieInput(string(deployment1Yaml[:]), "apply", "view-last-applied", "-f", "-", nsFlag, "-o", "json")
-
-			spew.Dump(output)
-			fmt.Println(output)
-
+			requiredString = "\"replicas\": 2"
+			if strings.Contains(output, requiredString) {
+				framework.Failf("Missing %s in kubectl view-last-applied", requiredString)
+			}
 
 			By("scale set replicas to 3")
-			nginxDeploy := "nginx"
-			label := labels.SelectorFromSet(labels.Set(map[string]string{"app": nginxDeploy}))
-			err := testutils.WaitForPodsWithLabelRunning(c, ns, label)
-			Expect(err).NotTo(HaveOccurred())
-			output = framework.RunKubectlOrDie("scale", "deployment", nginxDeploy, "--replicas=3", nsFlag)
+			nginxDeploy := "nginx-deployment"
+			framework.RunKubectlOrDie("scale", "deployment", nginxDeploy, "--replicas=3", nsFlag)
+			//label := labels.SelectorFromSet(labels.Set(map[string]string{"app": nginxDeploy}))
+			//err := testutils.WaitForPodsWithLabelRunning(c, ns, label)
+			//Expect(err).NotTo(HaveOccurred())
 
-			spew.Dump(output)
-			fmt.Println(output)
+			//spew.Dump(output)
+			//fmt.Println(output)
 			//output = framework.RunKubectlOrDie("scale", "deployment", "nginx-deployment", nsFlag)
 
-			By("doesn't have replicas and change the image")
-			output = framework.RunKubectlOrDieInput(string(deployment3Yaml[:]), "apply", "-f", "-", nsFlag)
+			By("apply file doesn't have replicas but image changed")
+			framework.RunKubectlOrDieInput(string(deployment3Yaml[:]), "apply", "-f", "-", nsFlag)
 
-			spew.Dump(output)
-			fmt.Println(output)
+			//spew.Dump(output)
+			//fmt.Println(output)
 
 			By("verify replicas still is 3 and image has been updated")
 			output = framework.RunKubectlOrDieInput(string(deployment3Yaml[:]), "apply", "-f", "-", nsFlag)
-			spew.Dump(output)
-			fmt.Println(output)
+			requiredItems := []string{"\"replicas\": 3", "nginx-slim:0.7"}
+			for _, item := range requiredItems {
+				if !strings.Contains(output, item) {
+					framework.Failf("Missing %s in kubectl cluster-info", item)
+				}
+			}
 		})
 	})
 
