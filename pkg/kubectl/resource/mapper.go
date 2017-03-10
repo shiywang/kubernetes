@@ -20,6 +20,8 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/davecgh/go-spew/spew"
+
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -49,12 +51,21 @@ type Mapper struct {
 // set into Info if the mapping's MetadataAccessor can retrieve them.
 func (m *Mapper) InfoForData(data []byte, source string) (*Info, error) {
 	versions := &runtime.VersionedObjects{}
+	//spew.Dump(len(versions.Objects))
+	//spew.Dump(versions.Objects)
+	fmt.Println("Decode begin %d", len(versions.Objects))
 	_, gvk, err := m.Decode(data, nil, versions)
+	fmt.Println("Decode end %d", len(versions.Objects))
+	//spew.Dump(versions.Objects)
+	fmt.Println("fffffffffffffffffffffffff")
 	if err != nil {
 		return nil, fmt.Errorf("unable to decode %q: %v", source, err)
 	}
 
+	spew.Dump()
 	obj, versioned := versions.Last(), versions.First()
+	//spew.Dump(obj)
+	//spew.Dump(versioned)
 	mapping, err := m.RESTMapping(gvk.GroupKind(), gvk.Version)
 	if err != nil {
 		return nil, fmt.Errorf("unable to recognize %q: %v", source, err)

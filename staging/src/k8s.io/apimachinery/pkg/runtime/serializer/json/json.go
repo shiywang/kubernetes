@@ -22,12 +22,14 @@ import (
 
 	"github.com/ghodss/yaml"
 	"github.com/ugorji/go/codec"
+	"github.com/davecgh/go-spew/spew"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/runtime/serializer/recognizer"
 	"k8s.io/apimachinery/pkg/util/framer"
 	utilyaml "k8s.io/apimachinery/pkg/util/yaml"
+	"fmt"
 )
 
 // NewSerializer creates a JSON serializer that handles encoding versioned objects into the proper JSON form. If typer
@@ -72,7 +74,10 @@ var _ recognizer.RecognizingDecoder = &Serializer{}
 // normal JSON/YAML unmarshalling. If into is provided and the original data is not fully qualified with kind/version/group, the type of
 // the into will be used to alter the returned gvk. On success or most errors, the method will return the calculated schema kind.
 func (s *Serializer) Decode(originalData []byte, gvk *schema.GroupVersionKind, into runtime.Object) (runtime.Object, *schema.GroupVersionKind, error) {
+	fmt.Println("serializer decode")
+	//spew.Dump(into)
 	if versioned, ok := into.(*runtime.VersionedObjects); ok {
+		fmt.Println("first in versioned")
 		into = versioned.Last()
 		obj, actual, err := s.Decode(originalData, gvk, into)
 		if err != nil {
@@ -81,9 +86,12 @@ func (s *Serializer) Decode(originalData []byte, gvk *schema.GroupVersionKind, i
 		versioned.Objects = []runtime.Object{obj}
 		return versioned, actual, nil
 	}
+	fmt.Println("not in")
+	fmt.Println("gvk is %+v", gvk)
 
 	data := originalData
 	if s.yaml {
+		fmt.Println("yaml")
 		altered, err := yaml.YAMLToJSON(data)
 		if err != nil {
 			return nil, nil, err
@@ -95,6 +103,7 @@ func (s *Serializer) Decode(originalData []byte, gvk *schema.GroupVersionKind, i
 	if err != nil {
 		return nil, nil, err
 	}
+	fmt.Println("actual is %+v", actual)
 
 	if gvk != nil {
 		// apply kind and version defaulting from provided default
@@ -111,6 +120,7 @@ func (s *Serializer) Decode(originalData []byte, gvk *schema.GroupVersionKind, i
 	}
 
 	if unk, ok := into.(*runtime.Unknown); ok && unk != nil {
+		fmt.Println("is unknow")
 		unk.Raw = originalData
 		unk.ContentType = runtime.ContentTypeJSON
 		unk.GetObjectKind().SetGroupVersionKind(*actual)
@@ -118,6 +128,7 @@ func (s *Serializer) Decode(originalData []byte, gvk *schema.GroupVersionKind, i
 	}
 
 	if into != nil {
+		fmt.Println("into != nil")
 		types, _, err := s.typer.ObjectKinds(into)
 		switch {
 		case runtime.IsNotRegisteredError(err):
@@ -154,9 +165,19 @@ func (s *Serializer) Decode(originalData []byte, gvk *schema.GroupVersionKind, i
 	if err != nil {
 		return nil, actual, err
 	}
+	//spew.Dump(into)
+	//spew.Dump(obj)
+
 
 	if err := codec.NewDecoderBytes(data, new(codec.JsonHandle)).Decode(obj); err != nil {
 		return nil, actual, err
+	}
+	//spew.Dump(into)
+	//spew.Dump(obj)
+	if versioned, ok := into.(*runtime.VersionedObjects); ok {
+		fmt.Println("convert=====================================")
+		spew.Dump(versioned.Objects)
+		spew.Dump(obj.(*runtime.VersionedObjects).Objects)
 	}
 	return obj, actual, nil
 }
