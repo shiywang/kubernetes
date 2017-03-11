@@ -542,9 +542,7 @@ func (v *StreamVisitor) Visit(fn VisitorFunc) error {
 		if err := ValidateSchema(ext.Raw, v.Schema); err != nil {
 			return fmt.Errorf("error validating %q: %v", v.Source, err)
 		}
-		fmt.Println("invoke InfoForData begin")
 		info, err := v.InfoForData(ext.Raw, v.Source)
-		fmt.Println("invoke InfoForData end")
 		if err != nil {
 			if fnErr := fn(info, err); fnErr != nil {
 				return fnErr

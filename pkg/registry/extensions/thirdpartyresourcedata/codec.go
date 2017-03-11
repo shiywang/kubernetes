@@ -337,6 +337,7 @@ func IsThirdPartyObject(rawData []byte, gvk *schema.GroupVersionKind) (isThirdPa
 }
 
 func (t *thirdPartyResourceDataDecoder) Decode(data []byte, gvk *schema.GroupVersionKind, into runtime.Object) (runtime.Object, *schema.GroupVersionKind, error) {
+	fmt.Println("t *thirdPartyResourceDataDecoder) Decode")
 	if into == nil {
 		if gvk == nil || gvk.Kind != t.kind {
 			if isThirdParty, _, err := IsThirdPartyObject(data, gvk); err != nil {

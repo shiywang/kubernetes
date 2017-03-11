@@ -1116,7 +1116,9 @@ func (r Result) Get() (runtime.Object, error) {
 	}
 
 	// decode, but if the result is Status return that as an error instead.
+	fmt.Println("Network Get() Decode begin")
 	out, _, err := r.decoder.Decode(r.body, nil, nil)
+	fmt.Println("Network Get() Decode end")
 	if err != nil {
 		return nil, err
 	}

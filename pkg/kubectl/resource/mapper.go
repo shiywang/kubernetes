@@ -53,9 +53,9 @@ func (m *Mapper) InfoForData(data []byte, source string) (*Info, error) {
 	versions := &runtime.VersionedObjects{}
 	//spew.Dump(len(versions.Objects))
 	//spew.Dump(versions.Objects)
-	fmt.Println("Decode begin %d", len(versions.Objects))
+	fmt.Println("Stream Decode begin", len(versions.Objects))
 	_, gvk, err := m.Decode(data, nil, versions)
-	fmt.Println("Decode end %d", len(versions.Objects))
+	fmt.Println("Stream Decode end", len(versions.Objects))
 	//spew.Dump(versions.Objects)
 	fmt.Println("fffffffffffffffffffffffff")
 	if err != nil {

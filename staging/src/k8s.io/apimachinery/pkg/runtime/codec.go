@@ -86,6 +86,7 @@ type DefaultingSerializer struct {
 
 // Decode performs a decode and then allows the defaulter to act on the provided object.
 func (d DefaultingSerializer) Decode(data []byte, defaultGVK *schema.GroupVersionKind, into Object) (Object, *schema.GroupVersionKind, error) {
+	fmt.Println("(d DefaultingSerializer) Decode")
 	obj, gvk, err := d.Decoder.Decode(data, defaultGVK, into)
 	if err != nil {
 		return obj, gvk, err
@@ -130,6 +131,7 @@ type NoopDecoder struct {
 var _ Serializer = NoopDecoder{}
 
 func (n NoopDecoder) Decode(data []byte, gvk *schema.GroupVersionKind, into Object) (Object, *schema.GroupVersionKind, error) {
+	fmt.Println(" (n NoopDecoder) Decode")
 	return nil, nil, fmt.Errorf("decoding is not allowed for this codec: %v", reflect.TypeOf(n.Encoder))
 }
 
@@ -211,6 +213,7 @@ func (s base64Serializer) Encode(obj Object, stream io.Writer) error {
 }
 
 func (s base64Serializer) Decode(data []byte, defaults *schema.GroupVersionKind, into Object) (Object, *schema.GroupVersionKind, error) {
+	fmt.Println("(s base64Serializer) Decode(")
 	out := make([]byte, base64.StdEncoding.DecodedLen(len(data)))
 	n, err := base64.StdEncoding.Decode(out, data)
 	if err != nil {
