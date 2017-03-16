@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"github.com/golang/glog"
+	"github.com/davecgh/go-spew/spew"
 
 	apiequality "k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/meta"
@@ -502,6 +503,7 @@ func GetAllReplicaSets(deployment *extensions.Deployment, c clientset.Interface)
 	if err != nil {
 		return nil, nil, nil, err
 	}
+	spew.Dump(podList)
 	oldRSes, allOldRSes, err := FindOldReplicaSets(deployment, rsList, podList)
 	if err != nil {
 		return nil, nil, nil, err
