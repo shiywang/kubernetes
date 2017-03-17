@@ -188,6 +188,7 @@ __custom_func() {
     * clusterroles
     * componentstatuses (aka 'cs')
     * configmaps (aka 'cm')
+    * cronjob
     * daemonsets (aka 'ds')
     * deployments (aka 'deploy')
     * endpoints (aka 'ep')
