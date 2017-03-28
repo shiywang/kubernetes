@@ -325,7 +325,7 @@ func (b *Builder) SelectAllParam(selectAll bool) *Builder {
 // When two or more arguments are received, they must be a single type and resource name(s).
 // The allowEmptySelector permits to select all the resources (via Everything func).
 func (b *Builder) ResourceTypeOrNameArgs(allowEmptySelector bool, args ...string) *Builder {
-	args = normalizeMultipleResourcesArgs(args)
+	args = b.normalizeMultipleResourcesArgs(args)
 	if ok, err := hasCombinedTypeArgs(args); ok {
 		if err != nil {
 			b.errs = append(b.errs, err)
@@ -401,10 +401,13 @@ func hasCombinedTypeArgs(args []string) (bool, error) {
 	}
 }
 
-// Normalize args convert multiple resources to resource tuples, a,b,c d
+// normalize args convert multiple resources to resource tuples, a,b,c d
 // as a transform to a/d b/d c/d
-func normalizeMultipleResourcesArgs(args []string) []string {
+func (b *Builder) 个itsnormalizeMultipleResourcesArgs(args []string) []string {
 	if len(args) >= 2 {
+		if args[0] == "all" {
+			args[0] = b.ReplaceAliases(args[0])
+		}
 		resources := []string{}
 		resources = append(resources, SplitResourceArgument(args[0])...)
 		if len(resources) > 1 {
@@ -826,8 +829,8 @@ func SplitResourceArgument(arg string) []string {
 }
 
 // HasNames returns true if the provided args contain resource names
-func HasNames(args []string) (bool, error) {
-	args = normalizeMultipleResourcesArgs(args)
+func (b *Builder) HasNames(args []string) (bool, error) {
+	args = b.normalizeMultipleResourcesArgs(args)
 	hasCombinedTypes, err := hasCombinedTypeArgs(args)
 	if err != nil {
 		return false, err
@@ -836,12 +839,12 @@ func HasNames(args []string) (bool, error) {
 }
 
 // MultipleTypesRequested returns true if the provided args contain multiple resource kinds
-func MultipleTypesRequested(args []string) bool {
+func (b *Builder) MultipleTypesRequested(args []string) bool {
 	if len(args) == 1 && args[0] == "all" {
 		return true
 	}
 
-	args = normalizeMultipleResourcesArgs(args)
+	args = b.normalizeMultipleResourcesArgs(args)
 	rKinds := sets.NewString()
 	for _, arg := range args {
 		rTuple, found, err := splitResourceTypeName(arg)

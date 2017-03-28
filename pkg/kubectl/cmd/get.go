@@ -283,8 +283,8 @@ func RunGet(f cmdutil.Factory, out, errOut io.Writer, cmd *cobra.Command, args [
 		return nil
 	}
 
-	r := resource.NewBuilder(mapper, typer, resource.ClientMapperFunc(f.UnstructuredClientForMapping), unstructured.UnstructuredJSONScheme).
-		NamespaceParam(cmdNamespace).DefaultNamespace().AllNamespaces(allNamespaces).
+	builder := resource.NewBuilder(mapper, typer, resource.ClientMapperFunc(f.UnstructuredClientForMapping), unstructured.UnstructuredJSONScheme)
+	r := builder.NamespaceParam(cmdNamespace).DefaultNamespace().AllNamespaces(allNamespaces).
 		FilenameParam(enforceNamespace, &options.FilenameOptions).
 		SelectorParam(selector).
 		ExportParam(export).
@@ -415,7 +415,7 @@ func RunGet(f cmdutil.Factory, out, errOut io.Writer, cmd *cobra.Command, args [
 	var lastMapping *meta.RESTMapping
 	w := printers.GetNewTabWriter(out)
 
-	if resource.MultipleTypesRequested(args) || cmdutil.MustPrintWithKinds(objs, infos, sorter) {
+	if builder.MultipleTypesRequested(args) || cmdutil.MustPrintWithKinds(objs, infos, sorter) {
 		showKind = true
 	}
 

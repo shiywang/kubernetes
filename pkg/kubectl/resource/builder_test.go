@@ -1229,7 +1229,8 @@ func TestHasNames(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		hasNames, err := HasNames(test.args)
+		b := NewBuilder(testapi.Default.RESTMapper(), api.Scheme, fakeClient(), testapi.Default.Codec())
+		hasNames, err := b.HasNames(test.args)
 		if !reflect.DeepEqual(test.expectedError, err) {
 			t.Errorf("expected HasName to error:\n%s\tgot:\n%s", test.expectedError, err)
 		}
@@ -1294,7 +1295,8 @@ func TestMultipleTypesRequested(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		hasMultipleTypes := MultipleTypesRequested(test.args)
+		b := NewBuilder(testapi.Default.RESTMapper(), api.Scheme, fakeClient(), testapi.Default.Codec())
+		hasMultipleTypes := b.MultipleTypesRequested(test.args)
 		if hasMultipleTypes != test.expectedMultipleTypes {
 			t.Errorf("expected MultipleTypesRequested to return %v for %s", test.expectedMultipleTypes, test.args)
 		}
