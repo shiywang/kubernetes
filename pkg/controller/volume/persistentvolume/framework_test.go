@@ -168,7 +168,7 @@ func (r *volumeReactor) React(action core.Action) (handled bool, ret runtime.Obj
 
 	// Test did not requst to inject an error, continue simulating API server.
 	switch {
-	case action.Matches("create", "persistentvolumes"):
+	case action.Matches("create", "persistentvolumes", action.GetSubresource()):
 		obj := action.(core.UpdateAction).GetObject()
 		volume := obj.(*v1.PersistentVolume)
 
@@ -185,7 +185,7 @@ func (r *volumeReactor) React(action core.Action) (handled bool, ret runtime.Obj
 		glog.V(4).Infof("created volume %s", volume.Name)
 		return true, volume, nil
 
-	case action.Matches("update", "persistentvolumes"):
+	case action.Matches("update", "persistentvolumes", action.GetSubresource()):
 		obj := action.(core.UpdateAction).GetObject()
 		volume := obj.(*v1.PersistentVolume)
 
@@ -209,7 +209,7 @@ func (r *volumeReactor) React(action core.Action) (handled bool, ret runtime.Obj
 		glog.V(4).Infof("saved updated volume %s", volume.Name)
 		return true, volume, nil
 
-	case action.Matches("update", "persistentvolumeclaims"):
+	case action.Matches("update", "persistentvolumeclaims", action.GetSubresource()):
 		obj := action.(core.UpdateAction).GetObject()
 		claim := obj.(*v1.PersistentVolumeClaim)
 
@@ -233,7 +233,7 @@ func (r *volumeReactor) React(action core.Action) (handled bool, ret runtime.Obj
 		glog.V(4).Infof("saved updated claim %s", claim.Name)
 		return true, claim, nil
 
-	case action.Matches("get", "persistentvolumes"):
+	case action.Matches("get", "persistentvolumes", action.GetSubresource()):
 		name := action.(core.GetAction).GetName()
 		volume, found := r.volumes[name]
 		if found {
@@ -244,7 +244,7 @@ func (r *volumeReactor) React(action core.Action) (handled bool, ret runtime.Obj
 			return true, nil, fmt.Errorf("Cannot find volume %s", name)
 		}
 
-	case action.Matches("delete", "persistentvolumes"):
+	case action.Matches("delete", "persistentvolumes", action.GetSubresource()):
 		name := action.(core.DeleteAction).GetName()
 		glog.V(4).Infof("deleted volume %s", name)
 		_, found := r.volumes[name]
@@ -256,7 +256,7 @@ func (r *volumeReactor) React(action core.Action) (handled bool, ret runtime.Obj
 			return true, nil, fmt.Errorf("Cannot delete volume %s: not found", name)
 		}
 
-	case action.Matches("delete", "persistentvolumeclaims"):
+	case action.Matches("delete", "persistentvolumeclaims", action.GetSubresource()):
 		name := action.(core.DeleteAction).GetName()
 		glog.V(4).Infof("deleted claim %s", name)
 		_, found := r.volumes[name]
@@ -282,7 +282,7 @@ func (r *volumeReactor) injectReactError(action core.Action) error {
 
 	for i, expected := range r.errors {
 		glog.V(4).Infof("trying to match %q %q with %q %q", expected.verb, expected.resource, action.GetVerb(), action.GetResource())
-		if action.Matches(expected.verb, expected.resource) {
+		if action.Matches(expected.verb, expected.resource, action.GetSubresource()) {
 			// That's the action we're waiting for, remove it from injectedErrors
 			r.errors = append(r.errors[:i], r.errors[i+1:]...)
 			glog.V(4).Infof("reactor found matching error at index %d: %q %q, returning %v", i, expected.verb, expected.resource, expected.error)

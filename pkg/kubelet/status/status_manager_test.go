@@ -99,7 +99,7 @@ func verifyActions(t *testing.T, manager *manager, expectedActions []core.Action
 	for i := 0; i < len(actions); i++ {
 		e := expectedActions[i]
 		a := actions[i]
-		if !a.Matches(e.GetVerb(), e.GetResource().Resource) || a.GetSubresource() != e.GetSubresource() {
+		if !a.Matches(e.GetVerb(), e.GetResource().Resource, a.GetSubresource()) {
 			t.Errorf("unexpected actions, got: %+v expected: %+v", actions, expectedActions)
 		}
 	}

@@ -73,10 +73,10 @@ func filterInformerActions(actions []core.Action) []core.Action {
 	ret := []core.Action{}
 	for _, action := range actions {
 		if len(action.GetNamespace()) == 0 &&
-			(action.Matches("list", "pods") ||
-				action.Matches("list", "replicasets") ||
-				action.Matches("watch", "pods") ||
-				action.Matches("watch", "replicasets")) {
+			(action.Matches("list", "pods", action.GetSubresource()) ||
+				action.Matches("list", "replicasets", action.GetSubresource()) ||
+				action.Matches("watch", "pods", action.GetSubresource()) ||
+				action.Matches("watch", "replicasets", action.GetSubresource())) {
 			continue
 		}
 		ret = append(ret, action)

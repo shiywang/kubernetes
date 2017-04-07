@@ -813,7 +813,7 @@ func removeListWatch(in []testcore.Action) []testcore.Action {
 	decimatedActions := []testcore.Action{}
 	// list and watch resource quota is done to maintain our cache, so that's expected.  Remove them from results
 	for i := range in {
-		if in[i].Matches("list", "resourcequotas") || in[i].Matches("watch", "resourcequotas") {
+		if in[i].Matches("list", "resourcequotas", in[i].GetSubresource()) || in[i].Matches("watch", "resourcequotas", in[i].GetSubresource()) {
 			continue
 		}
 

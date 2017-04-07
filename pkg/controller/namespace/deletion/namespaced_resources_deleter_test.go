@@ -74,7 +74,7 @@ func TestFinalizeNamespaceFunc(t *testing.T) {
 	if len(actions) != 1 {
 		t.Errorf("Expected 1 mock client action, but got %v", len(actions))
 	}
-	if !actions[0].Matches("create", "namespaces") || actions[0].GetSubresource() != "finalize" {
+	if !actions[0].Matches("create", "namespaces", "finalize") {
 		t.Errorf("Expected finalize-namespace action %v", actions[0])
 	}
 	finalizers := actions[0].(core.CreateAction).GetObject().(*v1.Namespace).Spec.Finalizers
@@ -263,7 +263,7 @@ func TestSyncNamespaceThatIsActive(t *testing.T) {
 		t.Errorf("Expected only one action from controller, but got: %d %v", len(mockClient.Actions()), mockClient.Actions())
 	}
 	action := mockClient.Actions()[0]
-	if !action.Matches("get", "namespaces") {
+	if !action.Matches("get", "namespaces", action.GetSubresource()) {
 		t.Errorf("Expected get namespaces, got: %v", action)
 	}
 }

@@ -224,7 +224,7 @@ func TestServiceAccountCreation(t *testing.T) {
 		}
 		for i, expectedName := range tc.ExpectCreatedServiceAccounts {
 			action := actions[i]
-			if !action.Matches("create", "serviceaccounts") {
+			if !action.Matches("create", "serviceaccounts", action.GetSubresource()) {
 				t.Errorf("%s: Unexpected action %s", k, action)
 				break
 			}

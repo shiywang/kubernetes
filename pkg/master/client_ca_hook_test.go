@@ -209,11 +209,11 @@ func getFinalConfiMaps(client *fake.Clientset) (map[string]*api.ConfigMap, bool)
 	updated := false
 
 	for _, action := range client.Actions() {
-		if action.Matches("create", "configmaps") {
+		if action.Matches("create", "configmaps", action.GetSubresource()) {
 			obj := action.(clienttesting.CreateAction).GetObject().(*api.ConfigMap)
 			ret[obj.Name] = obj
 		}
-		if action.Matches("update", "configmaps") {
+		if action.Matches("update", "configmaps", action.GetSubresource()) {
 			updated = true
 			obj := action.(clienttesting.UpdateAction).GetObject().(*api.ConfigMap)
 			ret[obj.Name] = obj

@@ -230,7 +230,7 @@ func TestUpdateNewNodeStatus(t *testing.T) {
 	assert.NoError(t, kubelet.updateNodeStatus())
 	actions := kubeClient.Actions()
 	require.Len(t, actions, 2)
-	require.True(t, actions[1].Matches("patch", "nodes"))
+	require.True(t, actions[1].Matches("patch", "nodes", actions[1].GetSubresource()))
 	require.Equal(t, actions[1].GetSubresource(), "status")
 
 	updatedNode, err := applyNodeStatusPatch(&existingNode, actions[1].(core.PatchActionImpl).GetPatch())
@@ -291,7 +291,7 @@ func TestUpdateNewNodeOutOfDiskStatusWithTransitionFrequency(t *testing.T) {
 
 	actions := kubeClient.Actions()
 	require.Len(t, actions, 2)
-	require.True(t, actions[1].Matches("patch", "nodes"))
+	require.True(t, actions[1].Matches("patch", "nodes", actions[1].GetSubresource()))
 	require.Equal(t, "status", actions[1].GetSubresource())
 
 	updatedNode, err := applyNodeStatusPatch(&existingNode, actions[1].(core.PatchActionImpl).GetPatch())
@@ -761,7 +761,7 @@ func TestUpdateNodeStatusWithRuntimeStateError(t *testing.T) {
 		assert.NoError(t, kubelet.updateNodeStatus())
 		actions := kubeClient.Actions()
 		require.Len(t, actions, 2)
-		require.True(t, actions[1].Matches("patch", "nodes"))
+		require.True(t, actions[1].Matches("patch", "nodes", actions[1].GetSubresource()))
 		require.Equal(t, actions[1].GetSubresource(), "status")
 
 		updatedNode, err := applyNodeStatusPatch(&existingNode, actions[1].(core.PatchActionImpl).GetPatch())

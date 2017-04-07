@@ -75,7 +75,7 @@ func TestSecretStore(t *testing.T) {
 	assert.Equal(t, 2, len(actions), "unexpected actions: %#v", actions)
 
 	for _, a := range actions {
-		assert.True(t, a.Matches("get", "secrets"), "unexpected actions: %#v", a)
+		assert.True(t, a.Matches("get", "secrets", a.GetSubresource()), "unexpected actions: %#v", a)
 	}
 
 	checkSecret(t, store, "ns1", "name1", true)
@@ -136,7 +136,7 @@ func TestSecretStoreGetAlwaysRefresh(t *testing.T) {
 	assert.Equal(t, 100, len(actions), "unexpected actions: %#v", actions)
 
 	for _, a := range actions {
-		assert.True(t, a.Matches("get", "secrets"), "unexpected actions: %#v", a)
+		assert.True(t, a.Matches("get", "secrets", a.GetSubresource()), "unexpected actions: %#v", a)
 	}
 }
 
