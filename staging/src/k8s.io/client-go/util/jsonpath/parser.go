@@ -17,12 +17,15 @@ limitations under the License.
 package jsonpath
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 const eof = -1
@@ -31,6 +34,13 @@ const (
 	leftDelim  = "{"
 	rightDelim = "}"
 )
+
+type Quotes struct {
+	firstChar rune
+	times     int
+}
+
+var quotes Quotes
 
 type Parser struct {
 	Name  string
@@ -62,6 +72,7 @@ func NewParser(name string) *Parser {
 
 // parseAction parsed the expression inside delimiter
 func parseAction(name, text string) (*Parser, error) {
+	//fmt.Printf("parseAction text is%s\n", text)
 	p, err := Parse(name, fmt.Sprintf("%s%s%s", leftDelim, text, rightDelim))
 	// when error happens, p will be nil, so we need to return here
 	if err != nil {
@@ -159,8 +170,8 @@ func (p *Parser) parseInsideAction(cur *ListNode) error {
 		p.consumeText()
 	case r == '[':
 		return p.parseArray(cur)
-	case r == '"':
-		return p.parseQuote(cur)
+	case r == '"' || r == '\'':
+		return p.parseQuote(cur, r)
 	case r == '.':
 		return p.parseField(cur)
 	case r == '+' || r == '-' || unicode.IsDigit(r):
@@ -334,13 +345,36 @@ Loop:
 func (p *Parser) parseFilter(cur *ListNode) error {
 	p.pos += len("[?(")
 	p.consumeText()
+	//spew.Dump(p.input[p.start:])
+	fmt.Println(p.input[p.start:])
+	begin := false
+	end := false
+	var pair rune
+
 Loop:
 	for {
-		switch p.next() {
+		r := p.next()
+		switch r {
 		case eof, '\n':
 			return fmt.Errorf("unterminated filter")
+		case '"', '\'':
+			if begin == false {
+				//save the paired rune
+				begin = true
+				pair = r
+				continue
+			}
+			//DecodeRuneInString in p.next() will eat escape from
+			//so only add when met paired rune
+			if p.input[p.pos-2] != '\\' && r == pair {
+				end = true
+			}
 		case ')':
-			break Loop
+			//in rightParser below quotes only appear zero or once
+			//and must be paired at the beginning and end
+			if begin == end  {
+				break Loop
+			}
 		}
 	}
 	if p.next() != ']' {
@@ -371,18 +405,24 @@ Loop:
 }
 
 // parseQuote unquotes string inside double quote
-func (p *Parser) parseQuote(cur *ListNode) error {
+func (p *Parser) parseQuote(cur *ListNode, end rune) error {
 Loop:
 	for {
-		switch p.next() {
+		r := p.next()
+		switch r {
 		case eof, '\n':
 			return fmt.Errorf("unterminated quoted string")
-		case '"':
-			break Loop
+		case end:
+			//if it's not escape break the Loop
+			if p.input[p.pos-2] != '\\' {
+				break Loop
+			}
 		}
 	}
 	value := p.consumeText()
-	s, err := strconv.Unquote(value)
+	s, err := UnquoteExtend(value)
+	spew.Dump(s)
+	fmt.Println(s)
 	if err != nil {
 		return fmt.Errorf("unquote string %s error %v", value, err)
 	}
@@ -446,4 +486,79 @@ func isAlphaNumeric(r rune) bool {
 // isBool reports whether s is a boolean value.
 func isBool(s string) bool {
 	return s == "true" || s == "false"
+}
+
+func singleQuotesToDoubleQuotes(s string) string {
+	n := len(s)
+	if s[0] == '\'' && s[n-1] == '\'' {
+		return "\"" + s[1:n-1] + "\""
+	}
+	return s
+}
+
+var ErrSyntax = errors.New("invalid syntax")
+
+//UnquoteExtend is almost as as strconv.Unquote(), but it support parse single quotes as a string
+func UnquoteExtend(s string) (string, error) {
+	n := len(s)
+	if n < 2 {
+		return "", ErrSyntax
+	}
+	quote := s[0]
+	if quote != s[n-1] {
+		return "", ErrSyntax
+	}
+	s = s[1 : n-1]
+
+	if quote == '`' {
+		if contains(s, '`') {
+			return "", ErrSyntax
+		}
+		return s, nil
+	}
+	if quote != '"' && quote != '\'' {
+		return "", ErrSyntax
+	}
+	if contains(s, '\n') {
+		return "", ErrSyntax
+	}
+
+	// Is it trivial?  Avoid allocation.
+	if !contains(s, '\\') && !contains(s, quote) {
+		switch quote {
+		case '"':
+			return s, nil
+		case '\'':
+			r, size := utf8.DecodeRuneInString(s)
+			if size == len(s) && (r != utf8.RuneError || size != 1) {
+				return s, nil
+			}
+		}
+	}
+
+	var runeTmp [utf8.UTFMax]byte
+	buf := make([]byte, 0, 3*len(s)/2) // Try to avoid more allocations.
+	for len(s) > 0 {
+		c, multibyte, ss, err := strconv.UnquoteChar(s, quote)
+		if err != nil {
+			return "", err
+		}
+		s = ss
+		if c < utf8.RuneSelf || !multibyte {
+			buf = append(buf, byte(c))
+		} else {
+			n := utf8.EncodeRune(runeTmp[:], c)
+			buf = append(buf, runeTmp[:n]...)
+		}
+	}
+	return string(buf), nil
+}
+
+func contains(s string, c byte) bool {
+	for i := 0; i < len(s); i++ {
+		if s[i] == c {
+			return true
+		}
+	}
+	return false
 }
