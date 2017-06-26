@@ -322,7 +322,9 @@ func RunGet(f cmdutil.Factory, out, errOut io.Writer, cmd *cobra.Command, args [
 		r.IgnoreErrors(kapierrors.IsNotFound)
 	}
 
+	isGeneric := false
 	if printer.IsGeneric() {
+		isGeneric = true
 		// we flattened the data from the builder, so we have individual items, but now we'd like to either:
 		// 1. if there is more than one item, combine them all into a single list
 		// 2. if there is a single item and that item is a list, leave it as its specific list
@@ -401,6 +403,9 @@ func RunGet(f cmdutil.Factory, out, errOut io.Writer, cmd *cobra.Command, args [
 		return utilerrors.Reduce(utilerrors.Flatten(utilerrors.NewAggregate(errs)))
 	}
 
+	if !isGeneric {
+		fmt.Println("Not Generic")
+	}
 	allErrs := []error{}
 	errs := sets.NewString()
 	infos, err := r.Infos()
