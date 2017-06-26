@@ -40,6 +40,7 @@ import (
 	"k8s.io/kubernetes/pkg/printers"
 	"k8s.io/kubernetes/pkg/util/i18n"
 	"k8s.io/kubernetes/pkg/util/interrupt"
+	"github.com/davecgh/go-spew/spew"
 )
 
 // GetOptions is the start of the data required to perform the operation.  As new fields are added, add them here instead of
@@ -538,6 +539,7 @@ func RunGet(f cmdutil.Factory, out, errOut io.Writer, cmd *cobra.Command, args [
 			// printer instead of decodedObj
 			objToPrint = original
 		}
+		spew.Dump(objToPrint)
 		if err := printer.PrintObj(objToPrint, w); err != nil {
 			if !errs.Has(err.Error()) {
 				fmt.Println("PrintObj2 went wrong")
@@ -546,6 +548,7 @@ func RunGet(f cmdutil.Factory, out, errOut io.Writer, cmd *cobra.Command, args [
 			}
 			continue
 		}
+		spew.Dump(allErrs)
 	}
 	w.Flush()
 	cmdutil.PrintFilterCount(errOut, len(objs), filteredResourceCount, len(allErrs), filterOpts, options.IgnoreNotFound)
