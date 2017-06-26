@@ -39,6 +39,7 @@ import (
 	"k8s.io/kubernetes/pkg/printers"
 	"k8s.io/kubernetes/pkg/util/i18n"
 	"k8s.io/kubernetes/pkg/util/interrupt"
+	"github.com/davecgh/go-spew/spew"
 )
 
 // GetOptions is the start of the data required to perform the operation.  As new fields are added, add them here instead of
@@ -322,8 +323,9 @@ func RunGet(f cmdutil.Factory, out, errOut io.Writer, cmd *cobra.Command, args [
 		r.IgnoreErrors(kapierrors.IsNotFound)
 	}
 
+	spew.Dump(printer)
 	isGeneric := false
-	if !printer.IsGeneric() {
+	if printer.IsGeneric() {
 		isGeneric = true
 		// we flattened the data from the builder, so we have individual items, but now we'd like to either:
 		// 1. if there is more than one item, combine them all into a single list
@@ -410,6 +412,7 @@ func RunGet(f cmdutil.Factory, out, errOut io.Writer, cmd *cobra.Command, args [
 	errs := sets.NewString()
 	infos, err := r.Infos()
 	if err != nil {
+		fmt.Println("must be some error")
 		allErrs = append(allErrs, err)
 	}
 
@@ -467,6 +470,7 @@ func RunGet(f cmdutil.Factory, out, errOut io.Writer, cmd *cobra.Command, args [
 
 			printer, err = f.PrinterForMapping(cmd, false, outputOpts, mapping, allNamespaces)
 			if err != nil {
+				fmt.Println("PrinterForMapping went wrong")
 				if !errs.Has(err.Error()) {
 					errs.Insert(err.Error())
 					allErrs = append(allErrs, err)
@@ -494,6 +498,7 @@ func RunGet(f cmdutil.Factory, out, errOut io.Writer, cmd *cobra.Command, args [
 				continue
 			}
 			if !errs.Has(err.Error()) {
+				fmt.Println("Filter went wrong")
 				errs.Insert(err.Error())
 				allErrs = append(allErrs, err)
 			}
@@ -520,6 +525,7 @@ func RunGet(f cmdutil.Factory, out, errOut io.Writer, cmd *cobra.Command, args [
 
 			if err := printer.PrintObj(decodedObj, w); err != nil {
 				if !errs.Has(err.Error()) {
+					fmt.Println("PrintObj went wrong")
 					errs.Insert(err.Error())
 					allErrs = append(allErrs, err)
 				}
@@ -534,6 +540,7 @@ func RunGet(f cmdutil.Factory, out, errOut io.Writer, cmd *cobra.Command, args [
 		}
 		if err := printer.PrintObj(objToPrint, w); err != nil {
 			if !errs.Has(err.Error()) {
+				fmt.Println("PrintObj2 went wrong")
 				errs.Insert(err.Error())
 				allErrs = append(allErrs, err)
 			}
