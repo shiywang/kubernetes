@@ -204,10 +204,6 @@ func AddHandlers(h printers.PrintHandler) {
 	h.Handler(statusColumns, nil, printStatus)
 	h.Handler(controllerRevisionColumns, nil, printControllerRevision)
 	h.Handler(controllerRevisionColumns, nil, printControllerRevisionList)
-	h.Handler(initializerConfigurationColumns, nil, printInitializerConfiguration)
-	h.Handler(initializerConfigurationColumns, nil, printInitializerConfigurationList)
-	h.Handler(externalAdmissionHookConfigurationColumns, nil, printExternalAdmissionHookConfiguration)
-	h.Handler(externalAdmissionHookConfigurationColumns, nil, printExternalAdmissionHookConfigurationList)
 }
 
 // Pass ports=nil for all ports.
