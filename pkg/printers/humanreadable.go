@@ -27,6 +27,7 @@ import (
 
 	"github.com/fatih/camelcase"
 
+	"github.com/davecgh/go-spew/spew"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	metav1alpha1 "k8s.io/apimachinery/pkg/apis/meta/v1alpha1"
@@ -35,7 +36,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/kubernetes/pkg/util/slice"
-	"github.com/davecgh/go-spew/spew"
 )
 
 type TablePrinter interface {

@@ -19,8 +19,8 @@ package cmd
 import (
 	"fmt"
 	"io"
-	"strings"
 	"reflect"
+	"strings"
 
 	"github.com/golang/glog"
 	"github.com/spf13/cobra"
