@@ -301,6 +301,7 @@ func (h *HumanReadablePrinter) PrintObj(obj runtime.Object, output io.Writer) er
 	}
 
 	t := reflect.TypeOf(obj)
+	spew.Dump(t)
 	if handler := h.handlerMap[t]; handler != nil {
 		if !h.options.NoHeaders && t != h.lastType {
 			var headers []string
@@ -366,13 +367,6 @@ func (h *HumanReadablePrinter) PrintObj(obj runtime.Object, output io.Writer) er
 			return results[1].Interface().(error)
 		}
 
-		if handler == nil {
-			fmt.Println("YES")
-			spew.Dump(handler)
-		} else {
-			fmt.Println("NO")
-			spew.Dump(handler)
-		}
 		// TODO: this code path is deprecated and will be removed when all handlers are row printers
 		args := []reflect.Value{reflect.ValueOf(obj), reflect.ValueOf(output), reflect.ValueOf(h.options)}
 		resultValue := handler.printFunc.Call(args)[0]
@@ -386,7 +380,7 @@ func (h *HumanReadablePrinter) PrintObj(obj runtime.Object, output io.Writer) er
 		// we don't recognize this type, but we can still attempt to print some reasonable information about.
 		unstructured, ok := obj.(runtime.Unstructured)
 		if !ok {
-			return fmt.Errorf("error: unknown type %T, expected unstructured in %#v", obj, h.handlerMap)
+			return fmt.Errorf("error: unknown type %T, expected unstructured in %#v", obj, obj)
 		}
 
 		content := unstructured.UnstructuredContent()
