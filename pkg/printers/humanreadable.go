@@ -376,10 +376,10 @@ func (h *HumanReadablePrinter) PrintObj(obj runtime.Object, output io.Writer) er
 
 	if _, err := meta.Accessor(obj); err == nil {
 		// we don't recognize this type, but we can still attempt to print some reasonable information about.
-		unstructured, ok := obj.(runtime.Unstructured)
-		if !ok {
-			return fmt.Errorf("error: unknown type %T, expected unstructured in %#v", obj, h.handlerMap)
-		}
+		unstructured, _ := obj.(runtime.Unstructured)
+		//if !ok {
+		//	return fmt.Errorf("error: unknown type %T, expected unstructured in %#v", obj, h.handlerMap)
+		//}
 
 		content := unstructured.UnstructuredContent()
 
