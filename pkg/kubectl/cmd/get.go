@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"reflect"
 
 	"github.com/golang/glog"
 	"github.com/spf13/cobra"
@@ -39,7 +40,6 @@ import (
 	"k8s.io/kubernetes/pkg/printers"
 	"k8s.io/kubernetes/pkg/util/i18n"
 	"k8s.io/kubernetes/pkg/util/interrupt"
-	"github.com/davecgh/go-spew/spew"
 )
 
 // GetOptions is the start of the data required to perform the operation.  As new fields are added, add them here instead of
@@ -323,7 +323,7 @@ func RunGet(f cmdutil.Factory, out, errOut io.Writer, cmd *cobra.Command, args [
 		r.IgnoreErrors(kapierrors.IsNotFound)
 	}
 
-	spew.Dump(printer)
+	fmt.Println(reflect.TypeOf(printer))
 	isGeneric := false
 	if printer.IsGeneric() {
 		isGeneric = true
