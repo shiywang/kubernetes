@@ -366,7 +366,13 @@ func (h *HumanReadablePrinter) PrintObj(obj runtime.Object, output io.Writer) er
 			return results[1].Interface().(error)
 		}
 
-		spew.Dump(handler)
+		if handler == nil {
+			fmt.Println("YES")
+			spew.Dump(handler)
+		} else {
+			fmt.Println("NO")
+			spew.Dump(handler)
+		}
 		// TODO: this code path is deprecated and will be removed when all handlers are row printers
 		args := []reflect.Value{reflect.ValueOf(obj), reflect.ValueOf(output), reflect.ValueOf(h.options)}
 		resultValue := handler.printFunc.Call(args)[0]
