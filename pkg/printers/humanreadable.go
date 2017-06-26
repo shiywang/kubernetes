@@ -35,6 +35,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/kubernetes/pkg/util/slice"
+	"github.com/davecgh/go-spew/spew"
 )
 
 type TablePrinter interface {
@@ -365,6 +366,7 @@ func (h *HumanReadablePrinter) PrintObj(obj runtime.Object, output io.Writer) er
 			return results[1].Interface().(error)
 		}
 
+		spew.Dump(handler)
 		// TODO: this code path is deprecated and will be removed when all handlers are row printers
 		args := []reflect.Value{reflect.ValueOf(obj), reflect.ValueOf(output), reflect.ValueOf(h.options)}
 		resultValue := handler.printFunc.Call(args)[0]
@@ -376,10 +378,10 @@ func (h *HumanReadablePrinter) PrintObj(obj runtime.Object, output io.Writer) er
 
 	if _, err := meta.Accessor(obj); err == nil {
 		// we don't recognize this type, but we can still attempt to print some reasonable information about.
-		unstructured, _ := obj.(runtime.Unstructured)
-		//if !ok {
-		//	return fmt.Errorf("error: unknown type %T, expected unstructured in %#v", obj, h.handlerMap)
-		//}
+		unstructured, ok := obj.(runtime.Unstructured)
+		if !ok {
+			return fmt.Errorf("error: unknown type %T, expected unstructured in %#v", obj, h.handlerMap)
+		}
 
 		content := unstructured.UnstructuredContent()
 
