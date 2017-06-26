@@ -47,6 +47,7 @@ import (
 	"k8s.io/kubernetes/pkg/apis/rbac"
 	"k8s.io/kubernetes/pkg/apis/settings"
 	"k8s.io/kubernetes/pkg/apis/storage"
+	"k8s.io/kubernetes/pkg/apis/admissionregistration"
 	storageutil "k8s.io/kubernetes/pkg/apis/storage/util"
 	"k8s.io/kubernetes/pkg/controller"
 	"k8s.io/kubernetes/pkg/printers"
@@ -106,6 +107,7 @@ var (
 	networkPolicyColumns             = []string{"NAME", "POD-SELECTOR", "AGE"}
 	certificateSigningRequestColumns = []string{"NAME", "AGE", "REQUESTOR", "CONDITION"}
 	podPresetColumns                 = []string{"NAME", "AGE"}
+	initializerConfigurationColumns  = []string{"NAME", "AGE"}
 	controllerRevisionColumns        = []string{"NAME", "CONTROLLER", "REVISION", "AGE"}
 )
 
@@ -201,6 +203,8 @@ func AddHandlers(h printers.PrintHandler) {
 	h.Handler(statusColumns, nil, printStatus)
 	h.Handler(controllerRevisionColumns, nil, printControllerRevision)
 	h.Handler(controllerRevisionColumns, nil, printControllerRevisionList)
+	h.Handler(initializerConfigurationColumns, nil, printInitializerConfiguration)
+	h.Handler(initializerConfigurationColumns, nil, printInitializerConfigurationList)
 }
 
 // Pass ports=nil for all ports.
@@ -2030,6 +2034,19 @@ func printControllerRevision(history *apps.ControllerRevision, w io.Writer, opti
 func printControllerRevisionList(list *apps.ControllerRevisionList, w io.Writer, options printers.PrintOptions) error {
 	for _, item := range list.Items {
 		if err := printControllerRevision(&item, w, options); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func printInitializerConfiguration(initializerConfiguration *admissionregistration.InitializerConfiguration, w io.Writer, options printers.PrintOptions) error {
+	return printObjectMeta(initializerConfiguration.ObjectMeta, w, options, false)
+}
+
+func printInitializerConfigurationList(list *admissionregistration.InitializerConfigurationList, w io.Writer, options printers.PrintOptions) error {
+	for i := range list.Items {
+		if err := printInitializerConfiguration(&list.Items[i], w, options); err != nil {
 			return err
 		}
 	}
