@@ -79,13 +79,16 @@ var errNotObject = fmt.Errorf("object does not implement the Object interfaces")
 func Accessor(obj interface{}) (metav1.Object, error) {
 	switch t := obj.(type) {
 	case metav1.Object:
+		fmt.Println("111111111111111")
 		return t, nil
 	case metav1.ObjectMetaAccessor:
+		fmt.Println("222222222222222")
 		if m := t.GetObjectMeta(); m != nil {
 			return m, nil
 		}
 		return nil, errNotObject
 	default:
+		fmt.Println("333333333333333")
 		return nil, errNotObject
 	}
 }
