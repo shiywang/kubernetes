@@ -323,7 +323,7 @@ func RunGet(f cmdutil.Factory, out, errOut io.Writer, cmd *cobra.Command, args [
 	}
 
 	isGeneric := false
-	if printer.IsGeneric() {
+	if !printer.IsGeneric() {
 		isGeneric = true
 		// we flattened the data from the builder, so we have individual items, but now we'd like to either:
 		// 1. if there is more than one item, combine them all into a single list
