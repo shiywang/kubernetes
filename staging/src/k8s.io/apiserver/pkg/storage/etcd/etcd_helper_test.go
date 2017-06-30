@@ -129,6 +129,7 @@ func createPodList(t *testing.T, helper etcdHelper, list *example.PodList) error
 
 func TestList(t *testing.T) {
 	scheme, codecs := testScheme(t)
+	codecs
 	codec := apitesting.TestCodec(codecs, examplev1.SchemeGroupVersion)
 	server := etcdtesting.NewEtcdTestClientServer(t)
 	defer server.Terminate(t)
