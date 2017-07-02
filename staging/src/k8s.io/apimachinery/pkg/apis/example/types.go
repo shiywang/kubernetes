@@ -19,7 +19,16 @@ package example
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+
 )
+
+// GroupName is the group name use in this package
+const GroupName = "example.apiserver.k8s.io"
+
+// SchemeGroupVersion is group version used to register these objects
+var SchemeGroupVersion = schema.GroupVersion{Group: GroupName, Version: "v1"}
+
 
 type (
 	ConditionStatus  string

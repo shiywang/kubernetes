@@ -30,10 +30,14 @@ import (
 	"k8s.io/apimachinery/pkg/apis/example"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
+	"k8s.io/apimachinery/pkg/conversion"
+	apiv1 "k8s.io/apiserver/pkg/apis/example/v1"
+	//apitesting "k8s.io/apimachinery/pkg/api/testing"
 
 	//"k8s.io/kubernetes/pkg/api/testapi"
 	//"k8s.io/kubernetes/pkg/api/validation"
 	//"github.com/davecgh/go-spew/spew"
+	//"k8s.io/kubernetes/pkg/api"
 )
 
 func TestUnstructuredList(t *testing.T) {
@@ -465,6 +469,34 @@ func TestUnstructuredListSetters(t *testing.T) {
 	}
 }
 
+type TestResource struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata"`
+	Value             int `json:"value"`
+}
+
+func testScheme(t *testing.T) (*runtime.Scheme, serializer.CodecFactory) {
+	scheme := runtime.NewScheme()
+	scheme.Log(t)
+	scheme.AddKnownTypes(schema.GroupVersion{Version: runtime.APIVersionInternal}, &TestResource{})
+	//example.AddToScheme(scheme)
+	//examplev1.AddToScheme(scheme)
+	if err := scheme.AddConversionFuncs(
+		func(in *TestResource, out *TestResource, s conversion.Scope) error {
+			*out = *in
+			return nil
+		},
+		func(in, out *time.Time, s conversion.Scope) error {
+			*out = *in
+			return nil
+		},
+	); err != nil {
+		panic(err)
+	}
+	codecs := serializer.NewCodecFactory(scheme)
+	return scheme, codecs
+}
+
 func TestDecodeNumbers(t *testing.T) {
 
 	// Start with a valid pod
@@ -488,7 +520,17 @@ func TestDecodeNumbers(t *testing.T) {
 	//}
 	//spew.Dump(codec)
 
+
+
+	//_, codecs := testScheme(t)
+	//codec := apitesting.TestCodec(codecs, example.SchemeGroupVersion)
+
+
+
 	scheme := runtime.NewScheme()
+	scheme.AddKnownTypes(schema.GroupVersion{Version: runtime.APIVersionInternal}, &apiv1.Pod{})
+	scheme.AddKnownTypes(schema.GroupVersion{Version: "v1"}, &apiv1.Pod{})
+
 	codecs := serializer.NewCodecFactory(scheme)
 	codec := codecs.LegacyCodec(schema.GroupVersion{Version: "v1"})
 
@@ -519,6 +561,7 @@ func TestDecodeNumbers(t *testing.T) {
 	// Decode with structured codec again
 	obj2, err := runtime.Decode(codec, roundtripJSON)
 	if err != nil {
+		//TODO fixme
 		t.Fatalf("unexpected error: %v", err)
 	}
 	// ensure pod is still valid
