@@ -150,6 +150,9 @@ func getResourceHandler(scope RequestScope, getter getterFunc) http.HandlerFunc 
 func GetResource(r rest.Getter, e rest.Exporter, scope RequestScope) http.HandlerFunc {
 	return getResourceHandler(scope,
 		func(ctx request.Context, name string, req *http.Request, trace *utiltrace.Trace) (runtime.Object, error) {
+			if req.URL.Path == "/api/v1/pods" {
+				fmt.Println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooo")
+			}
 			// check for export
 			options := metav1.GetOptions{}
 			if values := req.URL.Query(); len(values) > 0 {
@@ -180,6 +183,9 @@ func GetResource(r rest.Getter, e rest.Exporter, scope RequestScope) http.Handle
 func GetResourceWithOptions(r rest.GetterWithOptions, scope RequestScope, isSubresource bool) http.HandlerFunc {
 	return getResourceHandler(scope,
 		func(ctx request.Context, name string, req *http.Request, trace *utiltrace.Trace) (runtime.Object, error) {
+			if req.URL.Path == "/api/v1/pods" {
+				fmt.Println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooo")
+			}
 			opts, subpath, subpathKey := r.NewGetOptions()
 			trace.Step("About to process Get options")
 			if err := getRequestOptions(req, scope, opts, subpath, subpathKey, isSubresource); err != nil {
