@@ -281,7 +281,8 @@ func (r *responder) Error(err error) {
 
 func ListResource(r rest.Lister, rw rest.Watcher, scope RequestScope, forceWatch bool, minRequestTimeout time.Duration) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
-		glog.Info("haahahhaaaaaaaaaaaaaaaaaa")
+		glog.Info("haha +%v", req.URL.Path)
+
 		// For performance tracking purposes.
 		trace := utiltrace.New("List " + req.URL.Path)
 
@@ -368,6 +369,8 @@ func ListResource(r rest.Lister, rw rest.Watcher, scope RequestScope, forceWatch
 		defer trace.LogIfLong(500 * time.Millisecond)
 		trace.Step("About to List from storage")
 		result, err := r.List(ctx, &opts)
+		glog.Info("haha +%v", ctx)
+
 		if err != nil {
 			scope.err(err, w, req)
 			return
