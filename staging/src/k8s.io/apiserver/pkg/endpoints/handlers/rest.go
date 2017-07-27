@@ -281,6 +281,7 @@ func (r *responder) Error(err error) {
 
 func ListResource(r rest.Lister, rw rest.Watcher, scope RequestScope, forceWatch bool, minRequestTimeout time.Duration) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
+		glog.Info("haahahhaaaaaaaaaaaaaaaaaa")
 		// For performance tracking purposes.
 		trace := utiltrace.New("List " + req.URL.Path)
 
