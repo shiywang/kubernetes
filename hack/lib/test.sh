@@ -250,6 +250,9 @@ kube::test::describe_resource_events_assert() {
     fi
 }
 
+kube::test::if_has_correct_order() {
+}
+
 kube::test::if_has_string() {
   local message=$1
   local match=$2
