@@ -3940,6 +3940,44 @@ run_kubectl_sort_by_tests() {
   # Post-condition: valid-pod doesn't exist
   kube::test::get_object_assert pods "{{range.items}}{{$id_field}}:{{end}}" ''
 
+  ### sort-by should works by sorting by name
+  # Create three PODs
+  # Pre-condition: no POD exists
+  kube::test::get_object_assert pods "{{range.items}}{{$id_field}}:{{end}}" ''
+  # Command
+  kubectl create "${kube_flags[@]}" -f hack/testdata/sorted-pods/sorted-pod1.yaml
+  # Post-condition: sorted-pod1 is created
+  kube::test::get_object_assert pods "{{range.items}}{{$id_field}}:{{end}}" 'sorted-pod1:'
+  # Command
+  kubectl create "${kube_flags[@]}" -f hack/testdata/sorted-pods/sorted-pod2.yaml
+  # Post-condition: sorted-pod1 is created
+  kube::test::get_object_assert pods "{{range.items}}{{$id_field}}:{{end}}" 'sorted-pod1:sorted-pod2:'
+  # Command
+  kubectl create "${kube_flags[@]}" -f hack/testdata/sorted-pods/sorted-pod3.yaml
+  # Post-condition: sorted-pod1 is created
+  kube::test::get_object_assert pods "{{range.items}}{{$id_field}}:{{end}}" 'sorted-pod1:sorted-pod2:sorted-pod3:'
+
+  # Check output of sort-by name
+  output_message=$(kubectl get pods --sort-by="{metadata.labels.name}")
+
+  echo "============================================="
+  echo ${output_message}
+  echo "============================================="
+  kube::test::if_has_string "${output_message}" "NAME READY STATUS RESTARTS AGE sorted-pod1 0/1 Pending 0 0s sorted-pod2 0/1 Pending 0 0s sorted-pod3 0/1 Pending 0 0s"
+
+
+  output_message=$(kubectl get pods --sort-by="{metadata.name}")
+
+
+
+  ### Clean up
+  # Pre-condition: valid-pod exists
+  kube::test::get_object_assert pods "{{range.items}}{{$id_field}}:{{end}}" 'sorted-pod1:'
+  # Command
+  kubectl delete "${kube_flags[@]}" pod valid-pod --grace-period=0 --force
+  # Post-condition: valid-pod doesn't exist
+  kube::test::get_object_assert pods "{{range.items}}{{$id_field}}:{{end}}" ''
+
 
   set +o nounset
   set +o errexit
