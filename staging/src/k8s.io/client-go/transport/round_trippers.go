@@ -29,6 +29,7 @@ import (
 	"github.com/peterbourgon/diskv"
 
 	utilnet "k8s.io/apimachinery/pkg/util/net"
+	"github.com/davecgh/go-spew/spew"
 )
 
 // HTTPWrappersForConfig wraps a round tripper with any relevant layered
@@ -60,6 +61,7 @@ func HTTPWrappersForConfig(config *Config, rt http.RoundTripper) (http.RoundTrip
 		len(config.Impersonate.Extra) > 0 {
 		rt = NewImpersonatingRoundTripper(config.Impersonate, rt)
 	}
+	spew.Dump(config.CacheDir)
 	if len(config.CacheDir) > 0 {
 		rt = NewCacheRoundTripper(config.CacheDir, rt)
 	}
