@@ -61,8 +61,9 @@ func HTTPWrappersForConfig(config *Config, rt http.RoundTripper) (http.RoundTrip
 		len(config.Impersonate.Extra) > 0 {
 		rt = NewImpersonatingRoundTripper(config.Impersonate, rt)
 	}
-	spew.Dump(config.CacheDir)
+	spew.Dump("value ================================= %s", config.CacheDir)
 	if len(config.CacheDir) > 0 {
+		spew.Dump("yes ================================= %s", config.CacheDir)
 		rt = NewCacheRoundTripper(config.CacheDir, rt)
 	}
 	return rt, nil
