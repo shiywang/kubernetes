@@ -38,6 +38,7 @@ import (
 
 	"k8s.io/kube-openapi/pkg/builder"
 	"k8s.io/kube-openapi/pkg/common"
+	"github.com/davecgh/go-spew/spew"
 )
 
 const (
@@ -84,6 +85,13 @@ func BuildAndRegisterOpenAPIService(servePath string, webServices []*restful.Web
 	if err != nil {
 		return nil, err
 	}
+	specBytes, err := json.MarshalIndent(spec, " ", " ")
+	if err == nil {
+		spew.Dump("=================================================================")
+		spew.Dump(specBytes)
+		spew.Dump("=================================================================")
+	}
+
 	return RegisterOpenAPIService(spec, servePath, handler)
 }
 
