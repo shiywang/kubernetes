@@ -35,6 +35,7 @@ import (
 	"k8s.io/kubernetes/pkg/kubectl/cmd/templates"
 	cmdutil "k8s.io/kubernetes/pkg/kubectl/cmd/util"
 	"k8s.io/kubernetes/pkg/kubectl/util/i18n"
+	"github.com/davecgh/go-spew/spew"
 )
 
 // PortForwardOptions contains all the options for running the port-forward cli command.
@@ -105,7 +106,9 @@ func (f *defaultPortForwarder) ForwardPorts(method string, url *url.URL, opts Po
 		return err
 	}
 	dialer := spdy.NewDialer(upgrader, &http.Client{Transport: transport}, method, url)
+	spew.Dump(dialer)
 	fw, err := portforward.New(dialer, opts.Ports, opts.StopChannel, opts.ReadyChannel, f.cmdOut, f.cmdErr)
+	spew.Dump(fw)
 	if err != nil {
 		return err
 	}
