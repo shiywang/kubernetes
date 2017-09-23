@@ -41,6 +41,7 @@ import (
 	"k8s.io/apiserver/pkg/server/httplog"
 
 	"github.com/golang/glog"
+	"github.com/davecgh/go-spew/spew"
 )
 
 // ProxyHandler provides a http.Handler which will proxy traffic to locations
@@ -53,6 +54,8 @@ type ProxyHandler struct {
 }
 
 func (r *ProxyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	glog.V(4).Infof("%#v", req)
+	spew.Dump("=====================================eeee\\e")
 	reqStart := time.Now()
 	proxyHandlerTraceID := rand.Int63()
 
