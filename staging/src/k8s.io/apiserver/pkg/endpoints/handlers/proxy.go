@@ -54,7 +54,7 @@ type ProxyHandler struct {
 }
 
 func (r *ProxyHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	glog.V(4).Infof("%#v", req)
+	glog.V(4).Infof("sam:  %#v", req)
 	spew.Dump("=====================================eeee\\e")
 	reqStart := time.Now()
 	proxyHandlerTraceID := rand.Int63()
