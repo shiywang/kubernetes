@@ -41,7 +41,6 @@ import (
 	"k8s.io/apiserver/pkg/server/httplog"
 
 	"github.com/golang/glog"
-	"github.com/davecgh/go-spew/spew"
 )
 
 // ProxyHandler provides a http.Handler which will proxy traffic to locations
