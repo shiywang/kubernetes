@@ -24,6 +24,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/httpstream"
 	"k8s.io/apimachinery/pkg/util/httpstream/spdy"
 	restclient "k8s.io/client-go/rest"
+	"github.com/davecgh/go-spew/spew"
 )
 
 // Upgrader validates a response from the server after a SPDY upgrade.
@@ -81,7 +82,10 @@ func Negotiate(upgrader Upgrader, client *http.Client, req *http.Request, protoc
 	for i := range protocols {
 		req.Header.Add(httpstream.HeaderProtocolVersion, protocols[i])
 	}
+	spew.Dump(req)
+	spew.Dump("---------------------------------------")
 	resp, err := client.Do(req)
+	spew.Dump(resp)
 	if err != nil {
 		return nil, "", fmt.Errorf("error sending request: %v", err)
 	}
