@@ -1,0 +1,13 @@
+message DefaultSetup {
+  optional string name = 1;
+  optional string shorthand = 2;
+  optional string usage = 3;
+}
+
+extend google.protobuf.FieldOptions {
+  optional DefaultSetup default = 1234;
+}
+
+message VersionOptions {
+  optional bool client = 2 [(default) = { client: false name: "client" shorthand: "baz" usage: "Client version only (no server required)."}];
+}
