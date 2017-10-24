@@ -6,9 +6,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"testing"
+	"reflect"
 
 	"github.com/golang/protobuf/proto"
 	protobuf "github.com/golang/protobuf/protoc-gen-go/descriptor"
+	"github.com/davecgh/go-spew/spew"
+	"k8s.io/apiserver/pkg/storage/value"
 )
 
 // extractFile extracts a FileDescriptorProto from a gzip'd buffer.
@@ -58,11 +61,30 @@ func ForMessage(msg Message) (fd *protobuf.FileDescriptorProto, md *protobuf.Des
 }
 
 func TestABCMessage(t *testing.T) {
-	var msg *VersionTest
-	fd, md := ForMessage(msg)
+	var msg VersionTest
 
-	fmt.Println(fd)
-	fmt.Println(md)
+	v := reflect.ValueOf(msg)
+
+	values := make([]interface{}, v.NumField())
+	for i := 0; i < v.NumField()-1; i++ {
+
+		v.Field(i).Elem()
+		values[i] = v.Field(i).Interface()
+	}
+
+	fmt.Println(values)
+
+
+	fmt.Println("============================")
+
+	fd, md := ForMessage(&msg)
+
+	spew.Dump(fd.GetName())
+	spew.Dump(md.GetName())
+	spew.Dump(msg.String())
+
+	spew.Dump(msg)
+	spew.Dump(md.GetField()[0].GetType())
 
 
 	//if pkg, want := fd.GetPackage(), "google.protobuf"; pkg != want {

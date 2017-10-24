@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"reflect"
 
 	"github.com/ghodss/yaml"
 	"github.com/spf13/cobra"
@@ -52,23 +53,35 @@ var (
 )
 
 func NewCmdVersion(f cmdutil.Factory, out io.Writer) *cobra.Command {
+	options := new(VersionOptions)
+	var msg VersionTest
+
 	cmd := &cobra.Command{
 		Use:     "version",
 		Short:   i18n.T("Print the client and server version information"),
 		Long:    "Print the client and server version information for the current context",
 		Example: versionExample,
 		Run: func(cmd *cobra.Command, args []string) {
-			options := new(VersionOptions)
-			cmdutil.CheckErr(options.Complete(cmd))
-			cmdutil.CheckErr(options.Validate())
-			cmdutil.CheckErr(options.Run(f, out))
+			cmdutil.CheckErr(options.Complete(msg))
+			//cmdutil.CheckErr(options.Validate())
+			//cmdutil.CheckErr(options.Run(f, out))
 		},
 	}
-	cmd.Flags().BoolP("client", "c", false, "Client version only (no server required).")
-	cmd.Flags().BoolP("short", "", false, "Print just the version number.")
-	cmd.Flags().StringP("output", "o", "", "One of 'yaml' or 'json'.")
-	cmd.Flags().MarkShorthandDeprecated("client", "please use --client instead.")
+
+
+	v := reflect.ValueOf(msg)
+	cmd.Flags().StringVarP(&v.Field(2).String(), "output", "o", "", "One of 'yaml' or 'json'.")
+
+
+	//cmd.Flags().BoolVarP(msg.Client, "client", "c", false, "Client version only (no server required).")
+	//cmd.Flags().BoolVarP(&options.short, "short", "", false, "Print just the version number.")
+	//cmd.Flags().StringVarP(&options.output, "output", "o", "", "One of 'yaml' or 'json'.")
+	//cmd.Flags().MarkShorthandDeprecated("client", "please use --client instead.")
 	return cmd
+}
+
+func FlagsSetup() {
+
 }
 
 func retrieveServerVersion(f cmdutil.Factory) (*apimachineryversion.Info, error) {
@@ -131,10 +144,8 @@ func (o *VersionOptions) Run(f cmdutil.Factory, out io.Writer) error {
 	return serverErr
 }
 
-func (o *VersionOptions) Complete(cmd *cobra.Command) error {
-	o.clientOnly = cmdutil.GetFlagBool(cmd, "client")
-	o.short = cmdutil.GetFlagBool(cmd, "short")
-	o.output = cmdutil.GetFlagString(cmd, "output")
+func (o *VersionOptions) Complete(msg VersionTest) error {
+
 	return nil
 }
 
