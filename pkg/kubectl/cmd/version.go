@@ -31,6 +31,7 @@ import (
 	cmdutil "k8s.io/kubernetes/pkg/kubectl/cmd/util"
 	"k8s.io/kubernetes/pkg/kubectl/util/i18n"
 	"k8s.io/kubernetes/pkg/version"
+	"github.com/davecgh/go-spew/spew"
 )
 
 type Version struct {
@@ -69,8 +70,12 @@ func NewCmdVersion(f cmdutil.Factory, out io.Writer) *cobra.Command {
 	}
 
 
-	v := reflect.ValueOf(msg)
-	cmd.Flags().StringVarP(&v.Field(2).String(), "output", "o", "", "One of 'yaml' or 'json'.")
+	v := reflect.ValueOf(&msg).Elem()
+
+	spew.Dump()
+	var a string
+	cmd.Flags().StringVarP(&a, "output", "o", "", "One of 'yaml' or 'json'.")
+	v.Field(2).Set(reflect.ValueOf(&a))
 
 
 	//cmd.Flags().BoolVarP(msg.Client, "client", "c", false, "Client version only (no server required).")
@@ -145,6 +150,7 @@ func (o *VersionOptions) Run(f cmdutil.Factory, out io.Writer) error {
 }
 
 func (o *VersionOptions) Complete(msg VersionTest) error {
+	spew.Dump(msg.GetOutput())
 
 	return nil
 }
