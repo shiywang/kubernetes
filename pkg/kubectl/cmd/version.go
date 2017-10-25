@@ -17,21 +17,22 @@ limitations under the License.
 package cmd
 
 import (
-	"encoding/json"
-	"errors"
-	"fmt"
+	//"encoding/json"
+	//"errors"
+	//"fmt"
 	"io"
 	"reflect"
 
-	"github.com/ghodss/yaml"
+	//"github.com/ghodss/yaml"
 	"github.com/spf13/cobra"
 
 	apimachineryversion "k8s.io/apimachinery/pkg/version"
 	"k8s.io/kubernetes/pkg/kubectl/cmd/templates"
 	cmdutil "k8s.io/kubernetes/pkg/kubectl/cmd/util"
 	"k8s.io/kubernetes/pkg/kubectl/util/i18n"
-	"k8s.io/kubernetes/pkg/version"
+	//"k8s.io/kubernetes/pkg/version"
 	"github.com/davecgh/go-spew/spew"
+	"fmt"
 )
 
 type Version struct {
@@ -42,9 +43,7 @@ type Version struct {
 // VersionOptions: describe the options available to users of the "kubectl
 // version" command.
 type VersionOptions struct {
-	clientOnly bool
-	short      bool
-	output     string
+	msg VersionFlags
 }
 
 var (
@@ -55,7 +54,6 @@ var (
 
 func NewCmdVersion(f cmdutil.Factory, out io.Writer) *cobra.Command {
 	options := new(VersionOptions)
-	var msg VersionTest
 
 	cmd := &cobra.Command{
 		Use:     "version",
@@ -63,20 +61,19 @@ func NewCmdVersion(f cmdutil.Factory, out io.Writer) *cobra.Command {
 		Long:    "Print the client and server version information for the current context",
 		Example: versionExample,
 		Run: func(cmd *cobra.Command, args []string) {
-			cmdutil.CheckErr(options.Complete(msg))
+			cmdutil.CheckErr(options.Complete())
 			//cmdutil.CheckErr(options.Validate())
 			//cmdutil.CheckErr(options.Run(f, out))
 		},
 	}
 
 
-	v := reflect.ValueOf(&msg).Elem()
-
+	//v := reflect.ValueOf(msg).Elem()
 	spew.Dump()
 	var a string
 	cmd.Flags().StringVarP(&a, "output", "o", "", "One of 'yaml' or 'json'.")
-	v.Field(2).Set(reflect.ValueOf(&a))
-
+	//v.Field(2).Set(reflect.ValueOf(&a))
+	FlagsSetup(cmd, options.msg)
 
 	//cmd.Flags().BoolVarP(msg.Client, "client", "c", false, "Client version only (no server required).")
 	//cmd.Flags().BoolVarP(&options.short, "short", "", false, "Print just the version number.")
@@ -85,8 +82,24 @@ func NewCmdVersion(f cmdutil.Factory, out io.Writer) *cobra.Command {
 	return cmd
 }
 
-func FlagsSetup() {
+func FlagsSetup(cmd *cobra.Command, msg VersionFlags) error {
+	v := reflect.ValueOf(msg)
 
+	for i := 0; i < v.NumField()-1; i++ {
+		switch v.Field(i).Interface().(type) {
+		case *bool:
+			var tmpBool bool
+			cmd.Flags().BoolVarP(&tmpBool, "output", "o", true, "One of 'yaml' or 'json'.")
+			v.Field(i).Elem().Set(reflect.ValueOf(&tmpBool))
+		case *string:
+			var tmpString string
+			cmd.Flags().StringVarP(&tmpString, "output", "o", "", "One of 'yaml' or 'json'.")
+			v.Field(i).Elem().Set(reflect.ValueOf(&tmpString))
+		default:
+			return fmt.Errorf("haven't implement yet")
+		}
+	}
+	return nil
 }
 
 func retrieveServerVersion(f cmdutil.Factory) (*apimachineryversion.Info, error) {
@@ -101,64 +114,65 @@ func retrieveServerVersion(f cmdutil.Factory) (*apimachineryversion.Info, error)
 }
 
 func (o *VersionOptions) Run(f cmdutil.Factory, out io.Writer) error {
-	var (
-		serverVersion *apimachineryversion.Info
-		serverErr     error
-		versionInfo   Version
-	)
-
-	clientVersion := version.Get()
-	versionInfo.ClientVersion = &clientVersion
-
-	if !o.clientOnly {
-		serverVersion, serverErr = retrieveServerVersion(f)
-		versionInfo.ServerVersion = serverVersion
-	}
-
-	switch o.output {
-	case "":
-		if o.short {
-			fmt.Fprintf(out, "Client Version: %s\n", clientVersion.GitVersion)
-			if serverVersion != nil {
-				fmt.Fprintf(out, "Server Version: %s\n", serverVersion.GitVersion)
-			}
-		} else {
-			fmt.Fprintf(out, "Client Version: %s\n", fmt.Sprintf("%#v", clientVersion))
-			if serverVersion != nil {
-				fmt.Fprintf(out, "Server Version: %s\n", fmt.Sprintf("%#v", *serverVersion))
-			}
-		}
-	case "yaml":
-		marshalled, err := yaml.Marshal(&versionInfo)
-		if err != nil {
-			return err
-		}
-		fmt.Fprintln(out, string(marshalled))
-	case "json":
-		marshalled, err := json.MarshalIndent(&versionInfo, "", "  ")
-		if err != nil {
-			return err
-		}
-		fmt.Fprintln(out, string(marshalled))
-	default:
-		// There is a bug in the program if we hit this case.
-		// However, we follow a policy of never panicking.
-		return fmt.Errorf("VersionOptions were not validated: --output=%q should have been rejected", o.output)
-	}
-
-	return serverErr
+	//var (
+	//	serverVersion *apimachineryversion.Info
+	//	serverErr     error
+	//	versionInfo   Version
+	//)
+	//
+	//clientVersion := version.Get()
+	//versionInfo.ClientVersion = &clientVersion
+	//
+	//if !o.clientOnly {
+	//	serverVersion, serverErr = retrieveServerVersion(f)
+	//	versionInfo.ServerVersion = serverVersion
+	//}
+	//
+	//switch o.output {
+	//case "":
+	//	if o.short {
+	//		fmt.Fprintf(out, "Client Version: %s\n", clientVersion.GitVersion)
+	//		if serverVersion != nil {
+	//			fmt.Fprintf(out, "Server Version: %s\n", serverVersion.GitVersion)
+	//		}
+	//	} else {
+	//		fmt.Fprintf(out, "Client Version: %s\n", fmt.Sprintf("%#v", clientVersion))
+	//		if serverVersion != nil {
+	//			fmt.Fprintf(out, "Server Version: %s\n", fmt.Sprintf("%#v", *serverVersion))
+	//		}
+	//	}
+	//case "yaml":
+	//	marshalled, err := yaml.Marshal(&versionInfo)
+	//	if err != nil {
+	//		return err
+	//	}
+	//	fmt.Fprintln(out, string(marshalled))
+	//case "json":
+	//	marshalled, err := json.MarshalIndent(&versionInfo, "", "  ")
+	//	if err != nil {
+	//		return err
+	//	}
+	//	fmt.Fprintln(out, string(marshalled))
+	//default:
+	//	// There is a bug in the program if we hit this case.
+	//	// However, we follow a policy of never panicking.
+	//	return fmt.Errorf("VersionOptions were not validated: --output=%q should have been rejected", o.output)
+	//}
+	//
+	//return serverErr
+	return nil
 }
 
-func (o *VersionOptions) Complete(msg VersionTest) error {
-	spew.Dump(msg.GetOutput())
+func (o *VersionOptions) Complete() error {
+	//spew.Dump(o.msg.GetOutput())
 
 	return nil
 }
 
 func (o *VersionOptions) Validate() error {
-	if o.output != "" && o.output != "yaml" && o.output != "json" {
-		return errors.New(`--output must be 'yaml' or 'json'`)
-	}
-
+	//if o.output != "" && o.output != "yaml" && o.output != "json" {
+	//	return errors.New(`--output must be 'yaml' or 'json'`)
+	//}
+	//
 	return nil
 }

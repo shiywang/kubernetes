@@ -3,7 +3,7 @@ package cmd;
 
 import "google/protobuf/descriptor.proto";
 
-message FlagInfo {
+message FlagDetail {
   required string name = 1;
   required string value = 2;
   required string shorthand = 3;
@@ -11,10 +11,10 @@ message FlagInfo {
 }
 
 extend google.protobuf.FieldOptions {
-  optional FlagInfo info = 1234;
+  optional FlagDetail info = 1234;
 }
 
-message VersionTest {
+message VersionFlags {
   optional bool client = 2 [ (info) = { name: "client" value: "false" shorthand: "c" usage: "Client version only (no server required)."}];
   optional bool short = 3  [ (info) = { name: "short" value: "false" shorthand: "baz" usage: "Print just the version number."}];
   optional string output = 4 [ (info) = { name: "output" value: "" shorthand: "o" usage: "One of 'yaml' or 'json'."}];
