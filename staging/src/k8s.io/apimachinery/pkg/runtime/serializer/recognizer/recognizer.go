@@ -24,6 +24,7 @@ import (
 
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"github.com/davecgh/go-spew/spew"
 )
 
 type RecognizingDecoder interface {
@@ -105,6 +106,7 @@ func (d *decoder) Decode(data []byte, gvk *schema.GroupVersionKind, into runtime
 			if !ok {
 				continue
 			}
+			spew.Dump(r)
 			return r.Decode(data, gvk, into)
 		default:
 			skipped = append(skipped, t)
