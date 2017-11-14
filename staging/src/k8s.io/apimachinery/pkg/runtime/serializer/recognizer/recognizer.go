@@ -113,6 +113,7 @@ func (d *decoder) Decode(data []byte, gvk *schema.GroupVersionKind, into runtime
 		}
 	}
 
+	spew.Dump("hahahah there is skipped")
 	// try recognizers that returned unknown or didn't recognize their data
 	for _, r := range skipped {
 		out, actual, err := r.Decode(data, gvk, into)
