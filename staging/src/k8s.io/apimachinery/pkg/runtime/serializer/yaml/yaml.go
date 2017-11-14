@@ -20,6 +20,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/yaml"
+	"fmt"
 )
 
 // yamlSerializer converts YAML passed to the Decoder methods to JSON.
@@ -37,6 +38,7 @@ func NewDecodingSerializer(jsonSerializer runtime.Serializer) runtime.Serializer
 }
 
 func (c yamlSerializer) Decode(data []byte, gvk *schema.GroupVersionKind, into runtime.Object) (runtime.Object, *schema.GroupVersionKind, error) {
+	fmt.Println("(c yamlSerializer) Decode")
 	out, err := yaml.ToJSON(data)
 	if err != nil {
 		return nil, nil, err

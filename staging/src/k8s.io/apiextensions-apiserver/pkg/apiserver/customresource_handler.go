@@ -490,6 +490,7 @@ type unstructuredDecoder struct {
 }
 
 func (d unstructuredDecoder) Decode(data []byte, defaults *schema.GroupVersionKind, into runtime.Object) (runtime.Object, *schema.GroupVersionKind, error) {
+	fmt.Println("unstructed Decoder")
 	// Delegate for things other than Unstructured.
 	if _, ok := into.(runtime.Unstructured); !ok && into != nil {
 		return d.delegate.Decode(data, defaults, into)

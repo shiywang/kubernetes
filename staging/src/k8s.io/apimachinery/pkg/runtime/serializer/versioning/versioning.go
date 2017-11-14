@@ -21,6 +21,7 @@ import (
 
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"fmt"
 )
 
 // NewCodecForScheme is a convenience method for callers that are using a scheme.
@@ -249,6 +250,7 @@ type DirectDecoder struct {
 
 // Decode does not do conversion. It removes the gvk during deserialization.
 func (d DirectDecoder) Decode(data []byte, defaults *schema.GroupVersionKind, into runtime.Object) (runtime.Object, *schema.GroupVersionKind, error) {
+	fmt.Println("(d DirectDecoder) Decode")
 	obj, gvk, err := d.Decoder.Decode(data, defaults, into)
 	if obj != nil {
 		kind := obj.GetObjectKind()

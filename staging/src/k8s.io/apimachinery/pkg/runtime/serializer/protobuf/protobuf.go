@@ -86,6 +86,7 @@ var _ recognizer.RecognizingDecoder = &Serializer{}
 // not fully qualified with kind/version/group, the type of the into will be used to alter the returned gvk. On success or most
 // errors, the method will return the calculated schema kind.
 func (s *Serializer) Decode(originalData []byte, gvk *schema.GroupVersionKind, into runtime.Object) (runtime.Object, *schema.GroupVersionKind, error) {
+	fmt.Println("protobuf Decode")
 	if versioned, ok := into.(*runtime.VersionedObjects); ok {
 		into = versioned.Last()
 		obj, actual, err := s.Decode(originalData, gvk, into)
@@ -317,6 +318,7 @@ var _ runtime.Serializer = &RawSerializer{}
 // not fully qualified with kind/version/group, the type of the into will be used to alter the returned gvk. On success or most
 // errors, the method will return the calculated schema kind.
 func (s *RawSerializer) Decode(originalData []byte, gvk *schema.GroupVersionKind, into runtime.Object) (runtime.Object, *schema.GroupVersionKind, error) {
+	fmt.Println("(s *RawSerializer) Decode")
 	if into == nil {
 		return nil, nil, fmt.Errorf("this serializer requires an object to decode into: %#v", s)
 	}

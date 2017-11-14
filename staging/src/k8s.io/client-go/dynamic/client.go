@@ -38,6 +38,7 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/util/flowcontrol"
+	"fmt"
 )
 
 // Interface is a Kubernetes client that allows you to access metadata
@@ -261,6 +262,7 @@ func (rc *ResourceClient) Patch(name string, pt types.PatchType, data []byte) (*
 type dynamicCodec struct{}
 
 func (dynamicCodec) Decode(data []byte, gvk *schema.GroupVersionKind, obj runtime.Object) (runtime.Object, *schema.GroupVersionKind, error) {
+	fmt.Println("(dynamicCodec) Decode")
 	obj, gvk, err := unstructured.UnstructuredJSONScheme.Decode(data, gvk, obj)
 	if err != nil {
 		return nil, nil, err

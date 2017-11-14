@@ -30,6 +30,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/serializer/recognizer"
 	"k8s.io/apimachinery/pkg/util/framer"
 	utilyaml "k8s.io/apimachinery/pkg/util/yaml"
+	"fmt"
 )
 
 // NewSerializer creates a JSON serializer that handles encoding versioned objects into the proper JSON form. If typer
@@ -104,6 +105,7 @@ func init() {
 // normal JSON/YAML unmarshalling. If into is provided and the original data is not fully qualified with kind/version/group, the type of
 // the into will be used to alter the returned gvk. On success or most errors, the method will return the calculated schema kind.
 func (s *Serializer) Decode(originalData []byte, gvk *schema.GroupVersionKind, into runtime.Object) (runtime.Object, *schema.GroupVersionKind, error) {
+	fmt.Println("json Decode")
 	if versioned, ok := into.(*runtime.VersionedObjects); ok {
 		into = versioned.Last()
 		obj, actual, err := s.Decode(originalData, gvk, into)

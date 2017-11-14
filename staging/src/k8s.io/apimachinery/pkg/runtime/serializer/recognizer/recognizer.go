@@ -82,6 +82,7 @@ func (d *decoder) RecognizesData(peek io.Reader) (bool, bool, error) {
 }
 
 func (d *decoder) Decode(data []byte, gvk *schema.GroupVersionKind, into runtime.Object) (runtime.Object, *schema.GroupVersionKind, error) {
+	fmt.Println("this is the first ?")
 	var (
 		lastErr error
 		skipped []runtime.Decoder
