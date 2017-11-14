@@ -298,7 +298,7 @@ var UnstructuredJSONScheme runtime.Codec = unstructuredJSONScheme{}
 type unstructuredJSONScheme struct{}
 
 func (s unstructuredJSONScheme) Decode(data []byte, _ *schema.GroupVersionKind, obj runtime.Object) (runtime.Object, *schema.GroupVersionKind, error) {
-	fmt.Println("unstructuredJSONScheme Decode")
+	fmt.Println("unstructuredJSONScheme Decode", obj)
 	var err error
 	if obj != nil {
 		err = s.decodeInto(data, obj)
