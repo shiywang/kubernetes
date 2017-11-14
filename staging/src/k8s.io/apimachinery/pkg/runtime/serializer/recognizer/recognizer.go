@@ -106,7 +106,7 @@ func (d *decoder) Decode(data []byte, gvk *schema.GroupVersionKind, into runtime
 			if !ok {
 				continue
 			}
-			spew.Dump(r)
+			//spew.Dump(r)
 			return r.Decode(data, gvk, into)
 		default:
 			skipped = append(skipped, t)
