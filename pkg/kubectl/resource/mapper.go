@@ -49,7 +49,9 @@ type Mapper struct {
 // set into Info if the mapping's MetadataAccessor can retrieve them.
 func (m *Mapper) InfoForData(data []byte, source string) (*Info, error) {
 	versions := &runtime.VersionedObjects{}
+	fmt.Println("m.Decode Begin...............")
 	_, gvk, err := m.Decode(data, nil, versions)
+	fmt.Println("m.Decode Ends................")
 	if err != nil {
 		return nil, fmt.Errorf("unable to decode %q: %v", source, err)
 	}
