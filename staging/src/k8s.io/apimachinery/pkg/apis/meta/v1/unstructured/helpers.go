@@ -29,6 +29,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/json"
+	"github.com/davecgh/go-spew/spew"
 )
 
 // NestedFieldCopy returns a deep copy of the value of a nested field.
