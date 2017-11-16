@@ -31,6 +31,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/framer"
 	utilyaml "k8s.io/apimachinery/pkg/util/yaml"
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 )
 
 // NewSerializer creates a JSON serializer that handles encoding versioned objects into the proper JSON form. If typer
@@ -106,6 +107,7 @@ func init() {
 // the into will be used to alter the returned gvk. On success or most errors, the method will return the calculated schema kind.
 func (s *Serializer) Decode(originalData []byte, gvk *schema.GroupVersionKind, into runtime.Object) (runtime.Object, *schema.GroupVersionKind, error) {
 	fmt.Printf("json Decode %v\n", gvk)
+	spew.Dump(into)
 	if versioned, ok := into.(*runtime.VersionedObjects); ok {
 		fmt.Println("is versioned Objects")
 		into = versioned.Last()

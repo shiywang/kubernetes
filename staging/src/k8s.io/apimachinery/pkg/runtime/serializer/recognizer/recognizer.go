@@ -95,6 +95,7 @@ func (d *decoder) Decode(data []byte, gvk *schema.GroupVersionKind, into runtime
 		switch t := r.(type) {
 		case RecognizingDecoder:
 			fmt.Printf("number %d: type %v",i, t)
+			spew.Dump(d.decoders)
 			buf := bytes.NewBuffer(data)
 			ok, unknown, err := t.RecognizesData(buf)
 			if err != nil {
