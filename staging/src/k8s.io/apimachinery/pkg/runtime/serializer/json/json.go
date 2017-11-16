@@ -155,6 +155,7 @@ func (s *Serializer) Decode(originalData []byte, gvk *schema.GroupVersionKind, i
 	}
 
 	if into != nil {
+		fmt.Println("into != nil")
 		types, _, err := s.typer.ObjectKinds(into)
 		switch {
 		case runtime.IsNotRegisteredError(err):
@@ -191,6 +192,12 @@ func (s *Serializer) Decode(originalData []byte, gvk *schema.GroupVersionKind, i
 	if err != nil {
 		return nil, actual, err
 	}
+
+	fmt.Println("what the fuck?!")
+	spew.Dump(obj)
+	fmt.Println("what the fuck?!")
+
+
 
 	if err := jsoniter.ConfigFastest.Unmarshal(data, obj); err != nil {
 		return nil, actual, err
