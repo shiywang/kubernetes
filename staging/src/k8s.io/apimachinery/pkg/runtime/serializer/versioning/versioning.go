@@ -91,6 +91,7 @@ type codec struct {
 // successful, the returned runtime.Object will be the value passed as into. Note that this may bypass conversion if you pass an
 // into that matches the serialized version.
 func (c *codec) Decode(data []byte, defaultGVK *schema.GroupVersionKind, into runtime.Object) (runtime.Object, *schema.GroupVersionKind, error) {
+	fmt.Println("you forgot the versioning decoder")
 	versioned, isVersioned := into.(*runtime.VersionedObjects)
 	if isVersioned {
 		into = versioned.Last()
