@@ -83,7 +83,7 @@ func (d *decoder) RecognizesData(peek io.Reader) (bool, bool, error) {
 }
 
 func (d *decoder) Decode(data []byte, gvk *schema.GroupVersionKind, into runtime.Object) (runtime.Object, *schema.GroupVersionKind, error) {
-	fmt.Println("this is the first ?", gvk)
+	fmt.Printf("this is the first %v\n", gvk)
 	var (
 		lastErr error
 		skipped []runtime.Decoder
@@ -91,6 +91,7 @@ func (d *decoder) Decode(data []byte, gvk *schema.GroupVersionKind, into runtime
 
 	// try recognizers, record any decoders we need to give a chance later
 	for _, r := range d.decoders {
+		fmt.Printf("there are %d decoders", len(d.decoders))
 		switch t := r.(type) {
 		case RecognizingDecoder:
 			buf := bytes.NewBuffer(data)
@@ -106,7 +107,6 @@ func (d *decoder) Decode(data []byte, gvk *schema.GroupVersionKind, into runtime
 			if !ok {
 				continue
 			}
-			//spew.Dump(r)
 			return r.Decode(data, gvk, into)
 		default:
 			skipped = append(skipped, t)

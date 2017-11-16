@@ -105,8 +105,9 @@ func init() {
 // normal JSON/YAML unmarshalling. If into is provided and the original data is not fully qualified with kind/version/group, the type of
 // the into will be used to alter the returned gvk. On success or most errors, the method will return the calculated schema kind.
 func (s *Serializer) Decode(originalData []byte, gvk *schema.GroupVersionKind, into runtime.Object) (runtime.Object, *schema.GroupVersionKind, error) {
-	fmt.Println("json Decode", gvk)
+	fmt.Printf("json Decode %v\n", gvk)
 	if versioned, ok := into.(*runtime.VersionedObjects); ok {
+		fmt.Println("is versioned Objects")
 		into = versioned.Last()
 		obj, actual, err := s.Decode(originalData, gvk, into)
 		if err != nil {
