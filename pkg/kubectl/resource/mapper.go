@@ -23,6 +23,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"github.com/davecgh/go-spew/spew"
 )
 
 // DisabledClientForMapping allows callers to avoid allowing remote calls when handling
@@ -56,6 +57,9 @@ func (m *Mapper) InfoForData(data []byte, source string) (*Info, error) {
 		return nil, fmt.Errorf("unable to decode %q: %v", source, err)
 	}
 
+	fmt.Println("Version Begin...............")
+	spew.Dump(versions)
+	fmt.Println("Version Ends................")
 	obj, versioned := versions.Last(), versions.First()
 	mapping, err := m.RESTMapping(gvk.GroupKind(), gvk.Version)
 	if err != nil {
