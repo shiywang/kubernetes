@@ -22,6 +22,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 )
 
 // NewCodecForScheme is a convenience method for callers that are using a scheme.
@@ -92,11 +93,18 @@ type codec struct {
 // into that matches the serialized version.
 func (c *codec) Decode(data []byte, defaultGVK *schema.GroupVersionKind, into runtime.Object) (runtime.Object, *schema.GroupVersionKind, error) {
 	fmt.Println("you forgot the versioning decoder")
+
+	// into first is &runtime.VersionedObjects{}
 	versioned, isVersioned := into.(*runtime.VersionedObjects)
 	if isVersioned {
+		// into --->  nil  here
 		into = versioned.Last()
+		fmt.Println("confirm into is nil here")
+		spew.Dump(into)
+		fmt.Println("confirm into is nil here")
 	}
 
+	// into == nil  && obj is new-generated (internal), all values are 0
 	obj, gvk, err := c.decoder.Decode(data, defaultGVK, into)
 	if err != nil {
 		return nil, gvk, err
