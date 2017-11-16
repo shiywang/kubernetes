@@ -301,15 +301,17 @@ func (s unstructuredJSONScheme) Decode(data []byte, _ *schema.GroupVersionKind, 
 	fmt.Println("unstructuredJSONScheme Decode", obj)
 	var err error
 	if obj != nil {
+		fmt.Println("obj != nil")
 		err = s.decodeInto(data, obj)
 	} else {
+		fmt.Println("obj == nil")
 		obj, err = s.decode(data)
 	}
 
 	if err != nil {
 		return nil, nil, err
 	}
-
+	spew.Dump(obj)
 	gvk := obj.GetObjectKind().GroupVersionKind()
 	if len(gvk.Kind) == 0 {
 		return nil, &gvk, runtime.NewMissingKindErr(string(data))
