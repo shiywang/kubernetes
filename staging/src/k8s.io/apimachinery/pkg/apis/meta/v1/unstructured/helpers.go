@@ -302,6 +302,7 @@ func (s unstructuredJSONScheme) Decode(data []byte, _ *schema.GroupVersionKind, 
 	fmt.Println("unstructuredJSONScheme Decode", obj)
 	var err error
 	if obj != nil {
+		spew.Dump(obj)
 		fmt.Println("obj != nil")
 		err = s.decodeInto(data, obj)
 	} else {
