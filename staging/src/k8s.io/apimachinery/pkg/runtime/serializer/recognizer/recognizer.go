@@ -90,10 +90,11 @@ func (d *decoder) Decode(data []byte, gvk *schema.GroupVersionKind, into runtime
 	)
 
 	// try recognizers, record any decoders we need to give a chance later
-	for _, r := range d.decoders {
-		fmt.Printf("there are %d decoders", len(d.decoders))
+	for i, r := range d.decoders {
+		fmt.Printf("there are %d decoders\n", len(d.decoders))
 		switch t := r.(type) {
 		case RecognizingDecoder:
+			fmt.Printf("number %d: type %v",i, t)
 			buf := bytes.NewBuffer(data)
 			ok, unknown, err := t.RecognizesData(buf)
 			if err != nil {
@@ -109,6 +110,7 @@ func (d *decoder) Decode(data []byte, gvk *schema.GroupVersionKind, into runtime
 			}
 			return r.Decode(data, gvk, into)
 		default:
+			fmt.Printf("number %d: type %v",i, t)
 			skipped = append(skipped, t)
 		}
 	}
