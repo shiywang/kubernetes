@@ -160,11 +160,21 @@ func (c *codec) Decode(data []byte, defaultGVK *schema.GroupVersionKind, into ru
 		c.defaulter.Default(obj)
 	}
 
+	fmt.Println("before ConvertToVersion")
+	spew.Dump(c.decodeVersion)
+	fmt.Println("before ConvertToVersion")
 	out, err := c.convertor.ConvertToVersion(obj, c.decodeVersion)
 	if err != nil {
 		return nil, gvk, err
 	}
+
+	fmt.Println("after c.convertor.ConvertToVersion")
+	spew.Dump(out)
+	fmt.Println("after c.convertor.ConvertToVersion")
 	if isVersioned {
+		fmt.Println("append out here")
+		spew.Dump(out)
+		fmt.Println("append out here")
 		if versioned.Last() != out {
 			versioned.Objects = append(versioned.Objects, out)
 		}
