@@ -101,10 +101,12 @@ func init() {
 }
 
 // Decode attempts to convert the provided data into YAML or JSON, extract the stored schema kind, apply the provided default gvk, and then
-// load that data into an object matching the desired schema kind or the provided into. If into is *runtime.Unknown, the raw data will be
-// extracted and no decoding will be performed. If into is not registered with the typer, then the object will be straight decoded using
-// normal JSON/YAML unmarshalling. If into is provided and the original data is not fully qualified with kind/version/group, the type of
-// the into will be used to alter the returned gvk. On success or most errors, the method will return the calculated schema kind.
+// load that data into an object matching the desired schema kind or the provided into.
+// If into is *runtime.Unknown, the raw data will be extracted and no decoding will be performed.
+// If into is not registered with the typer, then the object will be straight decoded using normal JSON/YAML unmarshalling.
+// If into is provided and the original data is not fully qualified with kind/version/group, the type of the into will be used to alter the returned gvk.
+// If into is nil, it will generate and return an empty desired schema kind Object
+// On success or most errors, the method will return the calculated schema kind.
 func (s *Serializer) Decode(originalData []byte, gvk *schema.GroupVersionKind, into runtime.Object) (runtime.Object, *schema.GroupVersionKind, error) {
 	fmt.Printf("json Decode %v\n", gvk)
 	spew.Dump(into)

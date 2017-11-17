@@ -26,6 +26,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/runtime/serializer/json"
 	"k8s.io/apimachinery/pkg/util/diff"
+	"github.com/davecgh/go-spew/spew"
 )
 
 type testDecodable struct {
@@ -94,7 +95,22 @@ func TestDecode(t *testing.T) {
 			expectedObject: &testDecodable{},
 			expectedGVK:    &schema.GroupVersionKind{Kind: "Test", Group: "other", Version: "blah"},
 		},
-
+		// group version, kind is defaulted
+		{
+			data:           []byte(`{"apiVersion":"other1/blah1"}`),
+			defaultGVK:     &schema.GroupVersionKind{Kind: "Test", Group: "other", Version: "blah"},
+			creater:        &mockCreater{obj: &testDecodable{}},
+			expectedObject: &testDecodable{},
+			expectedGVK:    &schema.GroupVersionKind{Kind: "Test", Group: "other1", Version: "blah1"},
+		},
+		// gvk all provided then not defaulted at all
+		{
+			data:           []byte(`{"kind":"Test","apiVersion":"other/blah"}`),
+			defaultGVK:     &schema.GroupVersionKind{Kind: "Test1", Group: "other1", Version: "blah1"},
+			creater:        &mockCreater{obj: &testDecodable{}},
+			expectedObject: &testDecodable{},
+			expectedGVK:    &schema.GroupVersionKind{Kind: "Test", Group: "other", Version: "blah"},
+		},
 		// accept runtime.Unknown as into and bypass creator
 		{
 			data: []byte(`{}`),
@@ -233,6 +249,9 @@ func TestDecode(t *testing.T) {
 		}
 
 		if !reflect.DeepEqual(test.expectedObject, obj) {
+			fmt.Println("======================")
+			spew.Dump(obj)
+			fmt.Println("======================")
 			t.Errorf("%d: unexpected object:\n%s", i, diff.ObjectGoPrintSideBySide(test.expectedObject, obj))
 		}
 	}
