@@ -23,6 +23,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"github.com/davecgh/go-spew/spew"
 )
 
 // Mapper is a convenience struct for holding references to the interfaces
@@ -50,7 +51,10 @@ func (m *Mapper) AcceptUnrecognizedObjects() *Mapper {
 // if any of the decoding or client lookup steps fail. Name and namespace will be
 // set into Info if the mapping's MetadataAccessor can retrieve them.
 func (m *Mapper) InfoForData(data []byte, source string) (*Info, error) {
+	spew.Dump("m.Decode Begin...............")
 	obj, gvk, err := m.Decode(data, nil, nil)
+	spew.Dump("m.Decode Ends................")
+
 	if err != nil {
 		return nil, fmt.Errorf("unable to decode %q: %v", source, err)
 	}
