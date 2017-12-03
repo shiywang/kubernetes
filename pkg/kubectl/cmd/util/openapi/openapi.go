@@ -21,6 +21,7 @@ import (
 
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/kube-openapi/pkg/util/proto"
+	"github.com/davecgh/go-spew/spew"
 )
 
 // Resources interface describe a resources provider, that can give you
@@ -51,7 +52,9 @@ func NewOpenAPIData(doc *openapi_v2.Document) (Resources, error) {
 	}
 
 	resources := map[schema.GroupVersionKind]string{}
+	spew.Dump("===================")
 	for _, modelName := range models.ListModels() {
+		spew.Dump(modelName)
 		model := models.LookupModel(modelName)
 		if model == nil {
 			panic("ListModels returns a model that can't be looked-up.")
@@ -61,7 +64,7 @@ func NewOpenAPIData(doc *openapi_v2.Document) (Resources, error) {
 			resources[gvk] = modelName
 		}
 	}
-
+	spew.Dump("===================")
 	return &document{
 		resources: resources,
 		models:    models,
