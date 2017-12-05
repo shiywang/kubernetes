@@ -32,6 +32,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/kubernetes/pkg/kubectl/categories"
 	"k8s.io/kubernetes/pkg/kubectl/validation"
+	"github.com/davecgh/go-spew/spew"
 )
 
 var FileExtensions = []string{".json", ".yaml", ".yml"}
@@ -739,6 +740,7 @@ func (b *Builder) visitBySelector() *Result {
 }
 
 func (b *Builder) visitByResource() *Result {
+	spew.Dump(b.resourceTuples)
 	// if b.singleItemImplied is false, this could be by default, so double-check length
 	// of resourceTuples to determine if in fact it is singleItemImplied or not
 	isSingleItemImplied := b.singleItemImplied
