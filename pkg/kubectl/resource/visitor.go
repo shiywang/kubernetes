@@ -40,6 +40,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/yaml"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/kubernetes/pkg/kubectl/validation"
+	"github.com/davecgh/go-spew/spew"
 )
 
 const (
@@ -107,6 +108,13 @@ func (i *Info) Visit(fn VisitorFunc) error {
 
 // Get retrieves the object from the Namespace and Name fields
 func (i *Info) Get() (err error) {
+	if i.Name == "apis" || i.Name == "apigroups" {
+		err := i.Client.Get().AbsPath("/apis").Do().Error()
+		if err != nil {
+			return err
+		}
+	}
+
 	obj, err := NewHelper(i.Client, i.Mapping).Get(i.Namespace, i.Name, i.Export)
 	if err != nil {
 		if errors.IsNotFound(err) && len(i.Namespace) > 0 && i.Namespace != metav1.NamespaceDefault && i.Namespace != metav1.NamespaceAll {
@@ -119,6 +127,7 @@ func (i *Info) Get() (err error) {
 	}
 	i.Object = obj
 	i.ResourceVersion, _ = i.Mapping.MetadataAccessor.ResourceVersion(obj)
+	spew.Dump(obj)
 	return nil
 }
 
