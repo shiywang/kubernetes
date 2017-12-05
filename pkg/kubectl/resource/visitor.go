@@ -109,10 +109,14 @@ func (i *Info) Visit(fn VisitorFunc) error {
 // Get retrieves the object from the Namespace and Name fields
 func (i *Info) Get() (err error) {
 	if i.Name == "apis" || i.Name == "apigroups" {
-		err := i.Client.Get().AbsPath("/apis").Do().Error()
+		obj, err := i.Client.Get().AbsPath("/apis").Do().Get()
 		if err != nil {
 			return err
 		}
+		i.Object = obj
+		i.ResourceVersion, _ = i.Mapping.MetadataAccessor.ResourceVersion(obj)
+		spew.Dump(obj)
+		return nil
 	}
 
 	obj, err := NewHelper(i.Client, i.Mapping).Get(i.Namespace, i.Name, i.Export)
@@ -127,7 +131,6 @@ func (i *Info) Get() (err error) {
 	}
 	i.Object = obj
 	i.ResourceVersion, _ = i.Mapping.MetadataAccessor.ResourceVersion(obj)
-	spew.Dump(obj)
 	return nil
 }
 
